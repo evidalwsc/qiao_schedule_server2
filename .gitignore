@@ -1,0 +1,10 @@
+node_modules/
+config
+server/config
+server/server.js
+package-lock.json
+tests/
+server/controllers/etiquetas/*
+uploads/
+public/files/
+config/emails.js
