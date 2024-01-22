@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        style
+            include ./view_mail_notacobro_new.css
+    body
+        div(class='title-principal')
+            img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:150px;height:60px;')
+
+        div(class='container')
+            div(class='border')
+
+                if correo_sin_din === 'true'
+                    p(class='texto') Hola
+                    p(class='texto') Es un placer saludarte. Adjuntamos la nota de cobro por el valor de nuestro servicio. Cuando la carga esté próxima a llegar al puerto de destino en Chile, te enviaremos una nota de cobro actualizada que incluirá el valor del IVA de tu importación y los pagos que tú realizaste.
+                    p(class='texto') Tienes la opción de pagar por nuestros servicios en pesos o dólares:
+                    <br>
+                    p(class='texto') Ten en cuenta que <strong>si hay una alza significativa en el tipo de cambio en los próximos 5 días, actualizaremos el valor de nuestro servicio en pesos. No obstante, si ya has efectuado el pago, no se aplicará ningún reajuste.</strong>
+                    <br>
+                    div(class='card')
+                        if enlace!='' && enlace!=null
+                            <p><strong>PAGO EN PESOS</strong></p>
+                            <br>
+                            a.btn(href=enlace) PAGAR
+                            br
+                            br
+                            hr
+                        
+                        <p><strong>PAGO EN DÓLARES:</strong></p>
+                        <br>
+                        <p><strong>Banco: </strong>Santander</p>
+                        <p><strong>N° Cuenta: </strong>5100479950</p>
+                        <p><strong>RUT: </strong>77.166.807-0</p>
+                        <p><strong>Razón social: </strong>WS Cargo SpA</p>
+                        <p><strong>Correo: </strong>pagos@wscargo.cl </p>
+                        <p><strong>Asunto: </strong>#{asunto}</p>
+                        <br>
+                        p(class='texto') <strong>NO OLVIDES ENVIAR EL COMPROBANTE DE PAGO (LEGIBLE) a pagos@wscargo.cl y a tu ejecutivo (a) con el asunto #{asunto}</strong>
+                else 
+
+                    p(class='texto') Hola
+                    p(class='texto') Junto con saludar, adjuntamos <strong>DIN</strong> para poder cerrar el proceso de pago y puedas recibir tu carga.
+                    p(class='texto') El valor a <u>pagar va indicado en la columna cuentas y valores</u> en <strong>código 91 dentro del documento DIN</strong>
+                    p(class='texto') Recuerda que una vez que llegue tu contenedor a nuestra bodega en Santiago, será informado por tu ejecutivo(a) 
+                    p(class='texto') <strong>NO OLVIDES ENVIAR EL COMPROBANTE DE PAGO (LEGIBLE) a pagos@wscargo.cl y a tu ejecutivo (a) con el asunto #{asunto}</strong>
+                                        
+                    <br>
+                    div(class='card')
+                        if enlace!='' && enlace!=null
+                            <p><strong>PAGO EN PESOS</strong></p>
+                            <br>
+                            a.btn-danger(href=enlace) PAGAR
+                            hr
+                
+
+        div(class='container') 
+            p Muchas gracias
+
+            if comercial!=null 
+                    <p><strong> #{comercial.nombre} </strong></p>
+                    <p><strong> #{comercial.telefono} </strong></p>
+            if comercial!=null && comercial.telefono!=null 
+                p 
+                    strong 
+                        a(href='https://wa.me/'+comercial.telefono+'?text=Hola%20WSCARGO!%20') Whatsapp
+
+            div(class='border')
+
+        table(style="width:auto; border: none; font-family: Arial, Helvetica, sans-serif; font-size: 12px;")
+            tr
+                th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") 
+                td
+                        img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:150px;height:60px;')
+                td 
+                    <p> <strong>WS Cargo SPA</strong>   
+                    <p> Oficina: Av Andrés Bello 2299, Of 701, Providencia
+                    <p> Bodega:  Camino Noviciado N° 1945, comuna de Pudahuel, Región Metropolitana

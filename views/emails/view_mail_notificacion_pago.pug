@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        style
+            include ./view_mail_notificacion_pago.css
+    body
+        div(class='title-principal')
+            img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:150px;height:60px;')
+
+        div(class='container')
+            div(class='border')
+                p(class='texto') Hola  #{cliente}
+                p(class='texto') Te cuento que el <strong>#{fecha}</strong>, hemos validado el siguiente pago
+                <br>
+                div(class='card')
+                    <p><strong>MEDIO DE PAGO: </strong>#{datos.medio_pago}</p>
+                    each value, key in datosAdicionales
+                        if key==='Monto'
+                            <p><strong>Monto: </strong>#{datos.valor_total}</p>
+                        else if key==='Estado2'
+                        else
+                            <p><strong>#{key}: </strong>#{value}</p>
+                    <br>
+                    if datos.medio_pago_comision.toString().replace('$','').trim()!=='0,00'
+                        hr
+                        <br>
+                        <p><strong>DETALLE DE COMISION</strong></p>
+                        <br>
+                        <p><strong>Valor pagado del servicio: </strong>#{datos.valor_pago}</p>
+                        <p><strong>Valor comisión fija: </strong>#{datos.valor_comision_fijo}</p>
+                        <p><strong>Valor comisión fija iva: </strong>#{datos.valor_comision_fijo_iva}</p>
+                        <p><strong>Comisión medio de pago: </strong>#{datos.medio_pago_comision.toString().replace('$','')} %</p>
+                        <p><strong>Valor comisión neto: </strong>#{datos.valor_comision_neto}</p>
+                        <p><strong>Valor comisión iva: </strong>#{datos.valor_comision_iva}</p>
+                        <p><strong>Valor total transacción: </strong>#{datos.valor_total}</p>
+                    if datos.saldo_pendiente!=='-$ 999.999.999,00'
+                        hr
+                        <br>
+                        <p><strong>SALDO PENDIENTE</strong></p>
+                        <br>
+                        <p><strong>#{datos.saldo_pendiente}</strong></p>
+
+        div(class='container') 
+            p Muchas gracias
+
+            if comercial!=null 
+                    <p><strong> #{comercial.nombre} </strong></p>
+                    <p><strong> #{comercial.telefono} </strong></p>
+            if comercial!=null && comercial.telefono!=null 
+                p 
+                    strong 
+                        a(href='https://wa.me/'+comercial.telefono+'?text=Hola%20WSCARGO!%20') Whatsapp
+
+            div(class='border')
+
+        table(style="width:auto; border: none; font-family: Arial, Helvetica, sans-serif; font-size: 12px;")
+            tr
+                th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") 
+                td
+                        img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:150px;height:60px;')
+                td 
+                    <p> <strong>WS Cargo SPA</strong>   
+                    <p> Oficina: Av Andrés Bello 2299, Of 701, Providencia
+                    <p> Bodega:  Camino Noviciado N° 1945, comuna de Pudahuel, Región Metropolitana

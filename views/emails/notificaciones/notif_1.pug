@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        style
+            include ./notif_1.css
+    body
+        table
+            tr
+                td
+                    img(src="https://ci3.googleusercontent.com/proxy/STI_IiVDmp-0-S827D5mTZOvY1KLQV-GdkQyL-7gFVRqnm3e9igIv4BJWZy1UWF-Ncm6bF_R1UvRnzd-wknvGYyBa6gEpXTxi9YywhaAdGJe5yyTEqjnZdrvpT-ETCH5iz3VCq7oEC-73-4KQVM5lshQ0LwB=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v13_1657920194992_rojo_mail_(1).png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:left")
+
+        div(class='title-principal')
+            img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:600px;height:autopx;max-width:200px!important;border:0px;text-align:left')
+
+        div(class='container')
+            if tipo==22 || tipo==23
+                p(class='texto') Hola #{nombreUsuario}
+                p(class='texto') Para continuar con tu proceso de importación, recuerda cargar la cédula de identidad del representante legal de la empresa o persona que realizará la importación.
+                p(class='texto') Puedes cargar el documento iniciando sesión en nuestra
+                    <strong>
+                        a(href=`${host}`) plataforma digital</strong>. O puedes adjuntar el archivo respondiendo a este correo.
+
+                p(class='texto') La documentación pasará por un proceso de validación. Si está de acuerdo con lo requerido, continuaremos con tu proceso de importación.
+                p(class='texto') Recuerda que, frente a cualquier duda, te puedes contactar conmigo.
+
+            else if tipo==24
+                p(class='texto') Hola #{nombreUsuario}
+                p(class='texto') La documentación del poder de representante legal no ha sido aprobada. Por favor, vuelve a cargarla en nuestra
+                    <strong>
+                        a(href=`${host}`) plataforma digital</strong> o bien ponte en contacto conmigo para apoyarte con este requerimiento.
+
+            else if tipo==16 || tipo==17
+                p(class='texto') Hola #{nombreUsuario}
+                p(class='texto') La cedula de identidad cargada en la plataforma digital no ha sido aprobada. Por favor, vuelve a cargarla en nuestra <strong>
+                    a(href=`${host}`) plataforma digital</strong> o bien ponte en contacto conmigo para ayudarte en este requerimiento.
+
+            else if tipo==18
+                p(class='texto') Hola #{nombreUsuario}
+                if(datosAdicionales!=null && datosAdicionales.motivo)
+                    p(class='texto') La documentación del poder de representante legal no ha sido aprobada,la razón fue: 
+                        if datosAdicionales.motivo==1
+                            <strong>FECHA DE EXPIRACIÓN NO VÁLIDA</strong>.
+                        else if datosAdicionales.motivo==2
+                            <strong>DATOS NO VÁLIDOS</strong>.
+                        else if datosAdicionales.motivo==3
+                            <strong>OTRO MOTIVO</strong>.
+                    
+                    p(class='texto') Por favor, vuelve a cargarla en nuestra <strong> 
+                        a(href=`${host}`) plataforma digital</strong> o bien ponte en contacto conmigo para apoyarte con este requerimiento.       
+                else 
+                     p(class='texto') La documentación del poder de representante legal no ha sido aprobada. Por favor, vuelve a cargarla en nuestra <strong> 
+                        a(href=`${host}`) plataforma digital</strong> o bien ponte en contacto conmigo para apoyarte con este requerimiento.
+            else if tipo==99
+                p(class='texto') Hola #{nombreUsuario}
+                    each txt in texto.length ? texto :['SIN CONTENIDO']
+                        p(class='texto') #{txt}
+
+                p(class='texto') Puedes cargar estos documentos en nuestra plataforma digital haciendo clic acá <strong>
+                    a(href=`${host}`) LINK</strong> O puedes adjuntar los archivos respondiendo a este correo. 
+
+                p(class='texto') La documentación pasará por un proceso de validación. Si está de acuerdo con lo requerido, continuaremos con tu proceso de importación. 
+                p(class='texto') Recuerda que, frente a cualquier duda, te puedes contactar conmigo. 
+
+            else if tipo==100
+                p(class='texto') Hola #{nombreUsuario}
+        
+                p(class='texto') El mandato para el agente de aduanas aún no ha sido firmado.  
+
+                p(class='texto') Recuerda que para que podamos consolidar tu carga, debes realizar la firma electrónica del mandato para el Agente de Aduanas. 
+
+                p(class='texto') El procedimiento es seguro y en línea a través de la plataforma FirmaYa. 
+
+                p(class='texto') Para enrolarte en la plataforma, recibiste un correo electrónico con el asunto <strong> “Tienes una invitación FirmaYA!” </strong> desde el remitente: <strong>documentos@idok.cl</strong>.  En ese correo encontrarás un archivo con las instrucciones para el enrolamiento y firma del mandato. 
+
+                if host!=null
+                    p(class='texto') También puedes realizar este proceso descargando el documento acá <strong>
+                        a(href=`${host}`) LINK</strong> y llevarlo a la notaría más cercana que cuente con firma electrónica del notario. Luego respondernos este correo adjuntando una copia digital del documento. Costo: Según notaría. 
+
+                p(class='texto') Si tienes dudas, recuerda que estoy disponible para que me contactes. 
+
+            else if tipo==14
+                each txt in texto.length ? texto :['SIN CONTENIDO']
+                    p(class='texto') #{txt}
+
+                if(datosAdicionales!=null && datosAdicionales.encrypt_fk_consolidado)
+                    p(class='texto') Si tu servicio se encuentra con el pago validado puedes agendar la solicitud de entrega haciendo click en el botón 
+                        a.button(href=`${host}/solicitud_agendamiento/${datosAdicionales.encrypt_fk_consolidado}`) SOLICITAR ENTREGA
+
+                if(datosAdicionales!=null && datosAdicionales.texto_complementario)
+                    each txt in datosAdicionales.texto_complementario.length ? datosAdicionales.texto_complementario :['SIN CONTENIDO']
+                        p(class='texto') #{txt}
+
+            else if tipo==19 || tipo==20
+                p(class='texto') Hola #{nombreUsuario}
+                    each txt in texto.length ? texto :['SIN CONTENIDO']
+                        p(class='texto') #{txt}
+                    
+                p(class='texto') Por favor, vuelve a cargarla en 
+                    <strong>
+                        a(href=`${host}`) wscargo </strong> o bien ponte en contacto conmigo para ayudarte en este requerimiento
+
+            else
+                each txt in texto.length ? texto :['SIN CONTENIDO']
+                    p(class='texto') #{txt}
+
+
+        if(tracking_id!=null)
+            div(class='container')
+                p(class='texto') Recuerda que puedes ver el estado de tu servicio de manera rápida y fácil usando tu “tracking ID”. Ingresa a wscargo.cl, copia y pega este código y podrás acceder en acceder en cualquier momento:
+                a(href=`${host}/track/${tracking_id}`) #{tracking_id}
+
+        div(class='container')
+            p(class='texto-comercial') Muchas gracias
+
+            if comercial!=null
+                    <p><strong> #{comercial.nombre} </strong></p>
+                    <p><strong> #{comercial.telefono} </strong></p>
+            if comercial!=null && comercial.telefono!=null
+                p
+                    strong
+                        a(href='https://wa.me/'+comercial.telefono+'?text=Hola%20WSCARGO!%20') Whatsapp
+
+            div(class='border')
+
+        div(class='title-principal2')
+            img(src="https://ci3.googleusercontent.com/proxy/BotPj-Mpl01lWjh3btCmu9xB4LwJO5nNufYafj5A9FXjQqCwuM7Psq6_OBBxrYXFV-NeBUtJzNmBOZ3aVjnTiamKb1rb9F-8-GUyTRbNvmjcLtE_ujfkIK1KRNdfYsPW81jKk9TJph0PeTuNxQot9BuOwhJL-wQEJ8InA71q1Qptr05nE6o=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730173_que_tu_importacion_importe_(1).png",style="width:570px;height:autopx;max-width:570px!important;border:0px;text-align:center")
+
+        table
+            tr
+                td
+                    img(src="https://ci4.googleusercontent.com/proxy/I_3sFR4R5z820Jcx79OO-GkLp20RyJQScphKDkURGXGwroCULIgXOQ248ah7_xLJaraBVt-joOPKBQffZhb7LuVN-NzGA4ZEZgPg1FGkzOkEDYw6B2KNR-q0_m9DcS5KtNFK7f0kbKEaLksk9XrnxI2llXx4=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730490_amarillo_mail.png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:center")
+
+        p(style="line-height:1.7;font-family:Arial,verdana;font-size:12px;color:#000000;padding:0px;margin:0;text-align:center")
+            <span style="font-size:14.6667px">Síguenos</span>
+
+        div(class='title-principal2')
+
+            p(style="align:center")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2ab&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/recVySlAgiiEJHCUouYHRUDF-ZS-xAjuy0-KeWJ7FkQaVbTPIxUoXLlOq63XFeunIqkEoQ1qNpwhJYvToE3ilvJthtUhdIXLR4re_iO1Exwc9bUJWQPAKmhSK3JAwrToYSf0glQqQrrzXeZVfO8=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_1_1654207301708_zcsclwgtfb4.png",style="border:0px 0px 10px 0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2af&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/RcQdGv7zfDA0RfZh7cjKiXe_o7gM9nVt7gaM5wEAcEFPRiq6997PfFgIe8za50nOQ2RqqcYC5qSgJBtY4KVKUAsYYZ7Gt9jl5L3iAcjKrwp0vVjMHiQBD9i3mnN6zsbdMlyryBpiNaAJrdrbByA=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_2_1654207301754_zcsclwgtyt4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2b3&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/9NcRcWHwWGNtRWLafPTA9Zm0UqIgrYB1xoM7XqnGtyHuA3CyfYT3AniiyAJzwLgPG1Q9PoqeFe_KW8aMh-dU37C6OaWYoSTErYYYqOJv0u8129hCawC3Jhvy8AxaJCk0tnMRlznexoYbbZCzvM2HIAU=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_3_1654207301799_zcsclwgtinsta4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='mailto:contacto@wscargo.cl')
+
+                    img(src="https://ci3.googleusercontent.com/proxy/9q770eOE-bkBcRkbxQVWUV-_k0l9yllfJHbMg8UkuSPcOfkv_yJDUUuwab9A6sD4kyh9lN_YQu_1i3DsnfV2wwvWRLLxTsqZEqR35i8RYX1Z8lJA9QO96I63WMOccT4J3kG24FbDYCQuasT5QZVP-Q=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_4_1654207301854_zcsclwgtmail4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")

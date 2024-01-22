@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h2 {
+
+    font-size: 3rem;
+    text-align: center;
+}
+
+a{
+    font-weight: bold;
+    color: red;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+p{
+    line-height: 2;
+}
+
+table {
+	width:auto;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+th{
+    align-content: left;
+    text-align: left;
+    background-color: #D6D6D6;
+    padding: 10;
+}
+
+td{
+    align-content: left;
+    text-align: left;
+    padding: 10;
+}
+

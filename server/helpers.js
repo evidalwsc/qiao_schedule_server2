@@ -1,0 +1,2 @@
+//se transforma el objeto a un arreglo asociativo mediante la concatenacion de JSON.stringify
+exports.varDump = (objeto) => JSON.stringify(objeto, null, 2);//transforma la consulta de la DB en el formato JSON

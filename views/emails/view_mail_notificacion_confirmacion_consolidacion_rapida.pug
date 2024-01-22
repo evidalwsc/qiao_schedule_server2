@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        style
+            include ./view_mail_notificacion_recepcion.css
+    body
+        table
+            tr
+                td
+                    img(src="https://ci3.googleusercontent.com/proxy/STI_IiVDmp-0-S827D5mTZOvY1KLQV-GdkQyL-7gFVRqnm3e9igIv4BJWZy1UWF-Ncm6bF_R1UvRnzd-wknvGYyBa6gEpXTxi9YywhaAdGJe5yyTEqjnZdrvpT-ETCH5iz3VCq7oEC-73-4KQVM5lshQ0LwB=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v13_1657920194992_rojo_mail_(1).png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:left")
+
+        div(class='title-principal')
+            img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:600px;height:autopx;max-width:200px!important;border:0px;text-align:left')
+
+        div(class='container')
+            div(class='border')
+                    p(class='texto') Hola  #{cliente}
+
+                    if datosAdicionales!=null
+                        if datosAdicionales.fk_bodega!=null && datosAdicionales.fk_bodega==1
+                            p(class='texto') Te cuento que hemos recibido tu confirmación de que deseas despachar a Chile tus cargas ubicadas en nuestra bodega de YIWU
+                            p(class='texto') Este es el detalle de las cargas que se despacharán:
+                        else if datosAdicionales.fk_bodega!=null && datosAdicionales.fk_bodega==2
+                            p(class='texto') Te cuento que hemos recibido tu confirmación de que deseas despachar a Chile tus cargas ubicadas en nuestra bodega de GUANGZHOU
+                            p(class='texto') Este es el detalle de las cargas que se despacharán:
+                    else
+                        p(class='texto') Este es el detalle de las cargas que se despacharán:
+
+                    if  datos.length>0 
+                        table(style='width:100%', border='1')
+                            tr(style='background-color:#FD262D;color:#f8f9fa')
+                                    td 
+                                        p(class='texto') PROVEEDOR
+                                    td 
+                                        p(class='texto') F.RECEPCIÓN
+                                    td 
+                                        p(class='texto') DIAS DE ALMACENAMIENTO
+                                    td 
+                                        p(class='texto') BULTOS RECIBIDOS
+                                    td 
+                                        p(class='texto') M3 RECIBIDOS
+                                    td 
+                                        p(class='texto') CONDICIONES DE RECEPCIÓN
+                                    td 
+                                        p(class='texto') ESTADO DOCUMENTACIÓN
+                            each dato in datos.length ? datos :['SIN REGISTROS']
+                                <tr>
+                                    td 
+                                        b #{dato.fk_proveedor_nombre}
+                                    td 
+                                        p(class='texto') #{dato.fecha_creacion}
+                                    td 
+                                        p(class='texto') #{dato.dias_almacenamiento}
+                                    td 
+                                        p(class='texto') #{dato.bultos_completos}
+                                    td 
+                                        p(class='texto') #{dato.volumen_recepcionado}
+                                    td 
+                                         a(href=url+'condiciones_recepcion/'+dato.hash) VER
+                                    td 
+                                        if dato.packing_list1!=false 
+                                            if dato.packing_list1_aprob==0
+                                                p(class='texto') ESPERANDO APROBACIÓN ⚠️
+                                            else if dato.packing_list1_aprob==1
+                                                p(class='texto') OK ✅
+                                            else if dato.packing_list1_aprob==2
+                                                a(href=url+'upload_documents/'+dato.hash) FALTA DOCUMENTACIÓN 🛑
+                                        else 
+                                            a(href=url+'upload_documents/'+dato.hash) FALTA DOCUMENTACIÓN 🛑
+
+        
+                                   
+        div(class='container')
+            p(class='texto') Te recordamos que la tarifa considerada para este servicio es de #{datosAdicionales.tarifa} USD por m3 y que una vez aprobada la documentación de tus cargas procedemos a despacharlas em el próximo contenedor disponible y te informaremos por este mismo medio.
+            p(class='texto-comercial') Saludos
+            if comercial!=null
+                    <p><strong> #{comercial.nombre} </strong></p>
+                    <p><strong> #{comercial.telefono} </strong></p>
+            if comercial!=null && comercial.telefono!=null
+                p
+                    strong
+                        a(href='https://wa.me/'+comercial.telefono+'?text=Hola%20WSCARGO!%20') Whatsapp
+
+        div(class='title-principal2')
+            img(src="https://ci3.googleusercontent.com/proxy/BotPj-Mpl01lWjh3btCmu9xB4LwJO5nNufYafj5A9FXjQqCwuM7Psq6_OBBxrYXFV-NeBUtJzNmBOZ3aVjnTiamKb1rb9F-8-GUyTRbNvmjcLtE_ujfkIK1KRNdfYsPW81jKk9TJph0PeTuNxQot9BuOwhJL-wQEJ8InA71q1Qptr05nE6o=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730173_que_tu_importacion_importe_(1).png",style="width:570px;height:autopx;max-width:570px!important;border:0px;text-align:center")
+
+        table
+            tr
+                td
+                    img(src="https://ci4.googleusercontent.com/proxy/I_3sFR4R5z820Jcx79OO-GkLp20RyJQScphKDkURGXGwroCULIgXOQ248ah7_xLJaraBVt-joOPKBQffZhb7LuVN-NzGA4ZEZgPg1FGkzOkEDYw6B2KNR-q0_m9DcS5KtNFK7f0kbKEaLksk9XrnxI2llXx4=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730490_amarillo_mail.png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:center")
+
+        p(style="line-height:1.7;font-family:Arial,verdana;font-size:12px;color:#000000;padding:0px;margin:0;text-align:center")
+            <span style="font-size:14.6667px">Síguenos</span>
+
+        div(class='title-principal2')
+
+            p(style="align:center")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2ab&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/recVySlAgiiEJHCUouYHRUDF-ZS-xAjuy0-KeWJ7FkQaVbTPIxUoXLlOq63XFeunIqkEoQ1qNpwhJYvToE3ilvJthtUhdIXLR4re_iO1Exwc9bUJWQPAKmhSK3JAwrToYSf0glQqQrrzXeZVfO8=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_1_1654207301708_zcsclwgtfb4.png",style="border:0px 0px 10px 0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2af&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/RcQdGv7zfDA0RfZh7cjKiXe_o7gM9nVt7gaM5wEAcEFPRiq6997PfFgIe8za50nOQ2RqqcYC5qSgJBtY4KVKUAsYYZ7Gt9jl5L3iAcjKrwp0vVjMHiQBD9i3mnN6zsbdMlyryBpiNaAJrdrbByA=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_2_1654207301754_zcsclwgtyt4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2b3&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/9NcRcWHwWGNtRWLafPTA9Zm0UqIgrYB1xoM7XqnGtyHuA3CyfYT3AniiyAJzwLgPG1Q9PoqeFe_KW8aMh-dU37C6OaWYoSTErYYYqOJv0u8129hCawC3Jhvy8AxaJCk0tnMRlznexoYbbZCzvM2HIAU=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_3_1654207301799_zcsclwgtinsta4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='mailto:contacto@wscargo.cl')
+
+                    img(src="https://ci3.googleusercontent.com/proxy/9q770eOE-bkBcRkbxQVWUV-_k0l9yllfJHbMg8UkuSPcOfkv_yJDUUuwab9A6sD4kyh9lN_YQu_1i3DsnfV2wwvWRLLxTsqZEqR35i8RYX1Z8lJA9QO96I63WMOccT4J3kG24FbDYCQuasT5QZVP-Q=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_4_1654207301854_zcsclwgtmail4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
