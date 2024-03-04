@@ -744,142 +744,208 @@ exports.ProcesarExcelGatillos = async (req, res) => {
             console.log('Capturando el porte');
             var Reporte = await client.query(`
             SELECT
-            coalesce(id_proveedor,'') as id_proveedor
-            , coalesce(nombre_proveedor,'') as nombre_proveedor
+    coalesce(s.id_proveedor,'') as id_proveedor
+    , coalesce(s.nombre_proveedor,'') as nombre_proveedor
 
-            , case when length(fecha_creacion_proveedor)>0 and fecha_creacion_proveedor!='' and fecha_creacion_proveedor is not null and fecha_creacion_proveedor!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_creacion_proveedor, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_creacion_proveedor
+    , case when length(s.fecha_creacion_proveedor)>0 and s.fecha_creacion_proveedor!='' and s.fecha_creacion_proveedor is not null and s.fecha_creacion_proveedor!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_creacion_proveedor, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_creacion_proveedor
 
-            , coalesce(id_cliente,'') as id_cliente
-            , coalesce(razon_social_cliente,'') as razon_social_cliente
-            , coalesce(ejecutivo,'') as ejecutivo_comercial
-            , coalesce(ejecutivo,'') as ejecutivo_cuenta
-            , coalesce(bultos_esperados::text,'') as bultos_esperados
-            , REPLACE(coalesce(m3_esperados::text,''), '.', ',') as m3_esperados
-            , REPLACE(coalesce(m3_recibidos::text,''), '.', ',') as m3_recibidos
-            , coalesce(peso_esperado::text,'') as peso_esperado
-            , coalesce(bultos_recepcionados::text,'') as bultos_recepcionados
-            , coalesce(bodega_recepcion,'') as bodega_recepcion
+    , coalesce(s.id_cliente,'') as id_cliente
+    , coalesce(s.razon_social_cliente,'') as razon_social_cliente
+    , coalesce(s.ejecutivo,'') as ejecutivo_comercial
+    ,CASE
+      WHEN c.fk_ejecutivocuenta IS NOT NULL THEN
+      coalesce(CONCAT(u.nombre,' ',u.apellidos),'')
+      ELSE
+      '' 
+      END as ejecutivo_cuenta
+    , coalesce(s.bultos_esperados::text,'') as bultos_esperados
+    , REPLACE(coalesce(s.m3_esperados::text,''), '.', ',') as m3_esperados
+    , REPLACE(coalesce(s.m3_recibidos::text,''), '.', ',') as m3_recibidos
+    , coalesce(s.peso_esperado::text,'') as peso_esperado
+    , coalesce(s.bultos_recepcionados::text,'') as bultos_recepcionados
+    , coalesce(s.bodega_recepcion,'') as bodega_recepcion
 
-            , case when fecha_ultima_carga_documentos='OK' then fecha_ultima_carga_documentos
-            when length(fecha_ultima_carga_documentos)>0 and fecha_ultima_carga_documentos!='' and fecha_ultima_carga_documentos is not null and fecha_ultima_carga_documentos!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_ultima_carga_documentos, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    , case when s.fecha_ultima_carga_documentos='OK' then s.fecha_ultima_carga_documentos
+    when length(s.fecha_ultima_carga_documentos)>0 and s.fecha_ultima_carga_documentos!='' and s.fecha_ultima_carga_documentos is not null and s.fecha_ultima_carga_documentos!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_ultima_carga_documentos, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
 
-            case when fecha_cierre_consolidado_comercial='OK' then fecha_cierre_consolidado_comercial
-            when length(fecha_cierre_consolidado_comercial)>0 and fecha_cierre_consolidado_comercial!='' and fecha_cierre_consolidado_comercial is not null and fecha_cierre_consolidado_comercial!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_cierre_consolidado_comercial, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end
+    case when s.fecha_cierre_consolidado_comercial='OK' then s.fecha_cierre_consolidado_comercial
+    when length(s.fecha_cierre_consolidado_comercial)>0 and s.fecha_cierre_consolidado_comercial!='' and s.fecha_cierre_consolidado_comercial is not null and s.fecha_cierre_consolidado_comercial!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_cierre_consolidado_comercial, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end
 
-            end as fecha_ultima_carga_documentos
+    end as fecha_ultima_carga_documentos
 
-            , coalesce(fecha_aprobacion_documentos,'') as fecha_aprobacion_documentos
+    , coalesce(s.fecha_aprobacion_documentos,'') as fecha_aprobacion_documentos
 
-            , case when fecha_ultima_recepcion='OK' then fecha_ultima_recepcion
-            when length(fecha_ultima_recepcion)>0 and fecha_ultima_recepcion!='' and fecha_ultima_recepcion is not null and fecha_ultima_recepcion!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_ultima_recepcion, 'YYYY/MM/DD'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_ultima_recepcion_registro_1
+    , case when s.fecha_ultima_recepcion='OK' then s.fecha_ultima_recepcion
+    when length(s.fecha_ultima_recepcion)>0 and s.fecha_ultima_recepcion!='' and s.fecha_ultima_recepcion is not null and s.fecha_ultima_recepcion!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_ultima_recepcion, 'YYYY/MM/DD'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_ultima_recepcion_registro_1
 
-            , case when fecha_de_creacion_del_consolidado='OK' then fecha_de_creacion_del_consolidado
-            when length(fecha_de_creacion_del_consolidado)>0 and fecha_de_creacion_del_consolidado!='' and fecha_de_creacion_del_consolidado is not null and fecha_de_creacion_del_consolidado!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_de_creacion_del_consolidado, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_de_creacion_del_consolidado
+    , case when s.fecha_de_creacion_del_consolidado='OK' then s.fecha_de_creacion_del_consolidado
+    when length(s.fecha_de_creacion_del_consolidado)>0 and s.fecha_de_creacion_del_consolidado!='' and s.fecha_de_creacion_del_consolidado is not null and s.fecha_de_creacion_del_consolidado!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_de_creacion_del_consolidado, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_de_creacion_del_consolidado
 
-            , case when fecha_cierre_consolidado_comercial='OK' then fecha_cierre_consolidado_comercial
-            when length(fecha_cierre_consolidado_comercial)>0 and fecha_cierre_consolidado_comercial!='' and fecha_cierre_consolidado_comercial is not null and fecha_cierre_consolidado_comercial!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_cierre_consolidado_comercial, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_cierre_consolidado_comercial
+    , case when s.fecha_cierre_consolidado_comercial='OK' then s.fecha_cierre_consolidado_comercial
+    when length(s.fecha_cierre_consolidado_comercial)>0 and s.fecha_cierre_consolidado_comercial!='' and s.fecha_cierre_consolidado_comercial is not null and s.fecha_cierre_consolidado_comercial!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_cierre_consolidado_comercial, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_cierre_consolidado_comercial
 
-            , coalesce(id_consolidado_comercial,'') as id_consolidado_comercial
-            , coalesce(tracking_id,'') as tracking_id
-            , coalesce(proforma_id,'') as proforma_id
+    , coalesce(s.id_consolidado_comercial,'') as id_consolidado_comercial
+    , coalesce(s.tracking_id,'') as tracking_id
+    , coalesce(s.proforma_id,'') as proforma_id
 
-            , case when fecha_consolidado_contenedor='OK' then fecha_consolidado_contenedor
-            when length(fecha_consolidado_contenedor)>0 and fecha_consolidado_contenedor!='' and fecha_consolidado_contenedor is not null and fecha_consolidado_contenedor!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_consolidado_contenedor, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_consolidado_contenedor
+    , case when s.fecha_consolidado_contenedor='OK' then s.fecha_consolidado_contenedor
+    when length(s.fecha_consolidado_contenedor)>0 and s.fecha_consolidado_contenedor!='' and s.fecha_consolidado_contenedor is not null and s.fecha_consolidado_contenedor!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_consolidado_contenedor, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_consolidado_contenedor
 
-            , case when fecha_ingreso_datos_contenedor_nave_eta='OK' then fecha_ingreso_datos_contenedor_nave_eta
-            when length(fecha_ingreso_datos_contenedor_nave_eta)>0 and fecha_ingreso_datos_contenedor_nave_eta!='' and fecha_ingreso_datos_contenedor_nave_eta is not null and fecha_ingreso_datos_contenedor_nave_eta!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_ingreso_datos_contenedor_nave_eta, 'YYYY/MM/DD'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_ingreso_datos_contenedor_nave_eta
+    , case when s.fecha_ingreso_datos_contenedor_nave_eta='OK' then s.fecha_ingreso_datos_contenedor_nave_eta
+    when length(s.fecha_ingreso_datos_contenedor_nave_eta)>0 and s.fecha_ingreso_datos_contenedor_nave_eta!='' and s.fecha_ingreso_datos_contenedor_nave_eta is not null and s.fecha_ingreso_datos_contenedor_nave_eta!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_ingreso_datos_contenedor_nave_eta, 'YYYY/MM/DD'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_ingreso_datos_contenedor_nave_eta
 
-            , coalesce(n_contenedor,'') as n_contenedor
-            , coalesce(despacho_id,'') as despacho_id
-            , coalesce(nombre_nave,'') as nombre_nave
+    , coalesce(s.n_contenedor,'') as n_contenedor
+    , coalesce(s.despacho_id,'') as despacho_id
+    , coalesce(s.nombre_nave,'') as nombre_nave
 
-            , case when etd_nave_asignada='OK' then etd_nave_asignada
-            when length(etd_nave_asignada)>0 and etd_nave_asignada!='' and etd_nave_asignada is not null and etd_nave_asignada!='#¡REF!' then
-            coalesce(to_char(to_date(etd_nave_asignada, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as etd_nave_asignada
+    , case when s.etd_nave_asignada='OK' then s.etd_nave_asignada
+    when length(s.etd_nave_asignada)>0 and s.etd_nave_asignada!='' and s.etd_nave_asignada is not null and s.etd_nave_asignada!='#¡REF!' then
+    coalesce(to_char(to_date(s.etd_nave_asignada, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as etd_nave_asignada
 
-            , case when fecha_nueva_etd_o_eta='OK' then fecha_nueva_etd_o_eta
-            when length(fecha_nueva_etd_o_eta)>0 and fecha_nueva_etd_o_eta!='' and fecha_nueva_etd_o_eta is not null and fecha_nueva_etd_o_eta!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_nueva_etd_o_eta, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_nueva_etd_o_eta
+    , case when s.fecha_nueva_etd_o_eta='OK' then s.fecha_nueva_etd_o_eta
+    when length(s.fecha_nueva_etd_o_eta)>0 and s.fecha_nueva_etd_o_eta!='' and s.fecha_nueva_etd_o_eta is not null and s.fecha_nueva_etd_o_eta!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_nueva_etd_o_eta, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_nueva_etd_o_eta
 
-            , case when eta='OK' then eta
-            when length(eta)>0 and eta!='' and eta is not null then
-            coalesce(to_char(to_date(eta, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as eta
+    , case when s.eta='OK' then s.eta
+    when length(s.eta)>0 and s.eta!='' and s.eta is not null then
+    coalesce(to_char(to_date(s.eta, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as eta
 
-            , coalesce(n_carpeta,'') as n_carpeta
-            , coalesce(fecha_publicacion_aforo,'') as fecha_publicacion_aforo
+    , coalesce(s.n_carpeta,'') as n_carpeta
 
-            , case when fecha_publicacion='OK' then fecha_publicacion
-            when length(fecha_publicacion)>0 and fecha_publicacion!='' and fecha_publicacion is not null and fecha_publicacion!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_publicacion, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_publicacion
+	, coalesce(s.fecha_retiro_puerto,'') as fecha_retiro_puerto
+    , coalesce(s.hora_retiro,'') as hora_retiro
 
-            , coalesce(aforo,'') as aforo
+    , case when s.fecha_desconsolidacion_pudahuel='OK' then s.fecha_desconsolidacion_pudahuel
+    when length(s.fecha_desconsolidacion_pudahuel)>0 and s.fecha_desconsolidacion_pudahuel!='' and s.fecha_desconsolidacion_pudahuel is not null and s.fecha_desconsolidacion_pudahuel!='#¡REF!'then 
+    coalesce(to_char(to_date(s.fecha_desconsolidacion_pudahuel, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_desconsolidacion_pudahuel
 
-            , case when fecha_aforo='OK' then fecha_aforo
-            when length(fecha_aforo)>0 and fecha_aforo!='' and fecha_aforo is not null and fecha_aforo!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_aforo, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_aforo
+    , coalesce(s.hora_desconsolidacion,'') as hora_desconsolidacion
+    , coalesce(s.estado_finanzas,'') as estado_finanzas
 
-            /*, case when fecha_retiro='OK' then fecha_retiro
-            when length(fecha_retiro)>0 and fecha_retiro!='' and fecha_retiro is not null and fecha_retiro!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_retiro, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_retiro*/
-            , coalesce(fecha_retiro_puerto,'') as fecha_retiro_puerto
-            , coalesce(hora_retiro,'') as hora_retiro
+    , case when s.fecha_de_pago='OK' then s.fecha_de_pago
+    when length(s.fecha_de_pago)>0 and s.fecha_de_pago!='' and s.fecha_de_pago is not null and s.fecha_de_pago!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_de_pago, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_de_pago_registro_1
 
-            , case when fecha_desconsolidacion_pudahuel='OK' then fecha_desconsolidacion_pudahuel
-            when length(fecha_desconsolidacion_pudahuel)>0 and fecha_desconsolidacion_pudahuel!='' and fecha_desconsolidacion_pudahuel is not null and fecha_desconsolidacion_pudahuel!='#¡REF!'then 
-            coalesce(to_char(to_date(fecha_desconsolidacion_pudahuel, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_desconsolidacion_pudahuel
+    , case when s.fecha_ingreso_direccion='OK' then s.fecha_ingreso_direccion
+    when length(s.fecha_ingreso_direccion)>0 and s.fecha_ingreso_direccion!='' and s.fecha_ingreso_direccion is not null and s.fecha_ingreso_direccion!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_ingreso_direccion, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_ingreso_direccion
 
-            , coalesce(hora_desconsolidacion,'') as hora_desconsolidacion
-            , coalesce(estado_finanzas,'') as estado_finanzas
+    , case when s.fecha_entrega_retiro='OK' then s.fecha_entrega_retiro
+    when length(s.fecha_entrega_retiro)>0 and s.fecha_entrega_retiro!='' and s.fecha_entrega_retiro is not null and s.fecha_entrega_retiro!='#¡REF!' then
+    coalesce(to_char(to_date(s.fecha_entrega_retiro, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_entrega
+    , coalesce(s.chofer,'') as chofer
+    , coalesce(s.dias_libres,'') as dias_libres
 
-            , case when fecha_de_pago='OK' then fecha_de_pago
-            when length(fecha_de_pago)>0 and fecha_de_pago!='' and fecha_de_pago is not null and fecha_de_pago!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_de_pago, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_de_pago_registro_1
-
-            , case when fecha_ingreso_direccion='OK' then fecha_ingreso_direccion
-            when length(fecha_ingreso_direccion)>0 and fecha_ingreso_direccion!='' and fecha_ingreso_direccion is not null and fecha_ingreso_direccion!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_ingreso_direccion, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_ingreso_direccion
-
-            , case when fecha_programada='OK' then fecha_programada
-            when length(fecha_programada)>0 and fecha_programada!='' and fecha_programada is not null and fecha_programada!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_programada, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_programada
-
-            , case when fecha_entrega_retiro='OK' then fecha_entrega_retiro
-            when length(fecha_entrega_retiro)>0 and fecha_entrega_retiro!='' and fecha_entrega_retiro is not null and fecha_entrega_retiro!='#¡REF!' then
-            coalesce(to_char(to_date(fecha_entrega_retiro, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-            '' end as fecha_entrega
-
-            , coalesce(estado_entrega,'') as estado_entrega
-            , coalesce(chofer,'') as chofer
-            , coalesce(dias_libres,'') as dias_libres
-
-            , coalesce(fecha_creacion_cliente,'') as fecha_creacion_cliente
-        
-            FROM public.sla_00_completo
+    , coalesce(s.fecha_creacion_cliente,'') as fecha_creacion_cliente
+    , case when tdr.fk_registro_direccion is not null then 
+	concat(dir.direccion,' ',dir.numero,', ',comunas.nombre,', ',region.nombre) else '' end 
+	as fk_direccion_completa
+	,case when tdr.fk_registro_direccion is not null then comunas.nombre else '' end as fk_comuna_nombre
+    ,region.id as fk_region
+	,case when tdr.fk_registro_direccion is not null then region.nombre else '' end as fk_region_nombre
+	,case when te.fecha_programada is not null then coalesce(to_char(te.fecha_programada, 'DD/MM/YYYY'),'') else
+    '' end as fecha_programada 
+	,case when tdr.fecha is not null then coalesce(to_char(tdr.fecha, 'DD/MM/YYYY'),'') else
+    '' end as fecha_solicitud_despacho 
+	,CASE 
+                    WHEN tdr.fk_bodega is not null then 'RETIRO' 
+                    WHEN tdr.empresa_ext_retiro is not null then 'RETIRA TRANS.EXTERNO' 
+                    WHEN tdr.empresa_ext_despacho is not null then 'DESPACHO TRANS.EXTERNO' 
+                    WHEN tdr.fk_registro_direccion is null and tdr.fk_bodega is null and tdr.empresa_ext_retiro is null and tdr.empresa_ext_despacho is null then 'SIN ESPECIFICAR'
+                    WHEN tdr.fk_registro_direccion is not null and dir.fk_region!=12 and dir.fk_region is not null then 'REVISAR DESPACHO GRATUITO NO INCLUIDO'
+                    WHEN tdr.fk_registro_direccion is not null and dir.fk_region=12 and dir.fk_region is not null and dir.fk_comuna in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'REVISAR DESPACHO GRATUITO NO INCLUIDO'
+                    WHEN tdr.fk_registro_direccion is not null and dir.fk_region=12 and dir.fk_region is not null and dir.fk_comuna not in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'DESPACHO GRATIS INCLUIDO'
+                    ELSE 'SIN ESPECIFICAR' END AS tipo_entrega
+	,CASE WHEN te.estado_entrega=1 then 'ENTREGADO' WHEN te.estado_entrega=2 then 'PARCIAL' ELSE null END as estado_entrega
+	,case when t.fk_proforma is not null then
+	coalesce(to_char(cp.fecha_prog_aforo, 'DD/MM/YYYY'),'') else
+    '' end as fecha_publicacion_aforo 
+	
+	,case when t.fk_proforma is not null then
+	coalesce(to_char(to_date(cp.fecha_tnm_retiro,'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_tnm_retiro 
+	,case when t.fk_proforma is not null then
+	coalesce(to_char(cp.fecha_retiro_puerto, 'DD/MM/YYYY'),'') else
+    '' end as fecha_retiro_puerto 
+	,CASE
+      WHEN te.id IS NOT NULL THEN
+      coalesce(CONCAT(u2.nombre,' ',u2.apellidos),'')
+      ELSE
+      null 
+      END as responsable_entrega
+	 ,case when nc."m3" is not null then
+	nc."m3" else
+    0 end as m3
+	,case when s.id_consolidado_comercial is not null and s.id_consolidado_comercial!='' then
+	coalesce(to_char(d."createdAt", 'DD/MM/YYYY'),'') else
+    '' end as fecha_envio_nc
+	,case when t.fecha_recepcion_1 is not null then
+	 coalesce(to_char(to_date(t.fecha_recepcion_1, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_recepcion_1
+	,case when t.fecha_recepcion_2 is not null then
+	 coalesce(to_char(to_date(t.fecha_recepcion_2, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_recepcion_2
+	,case when t.fecha_recepcion_3 is not null then
+	 coalesce(to_char(to_date(t.fecha_recepcion_3, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_recepcion_3
+	,case when t.fecha_recepcion_4 is not null then
+	 coalesce(to_char(to_date(t.fecha_recepcion_4, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_recepcion_4
+	,case when t.fecha_recepcion_5 is not null then
+	 coalesce(to_char(to_date(t.fecha_recepcion_5, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_recepcion_5
+	,case when nc.fecha_pago_1 is not null then
+	 coalesce(to_char(to_date(nc.fecha_pago_1, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_pago_1
+	,case when nc.fecha_pago_2 is not null then
+	 coalesce(to_char(to_date(nc.fecha_pago_2, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_pago_2
+	,case when nc.fecha_pago_3 is not null then
+	 coalesce(to_char(to_date(nc.fecha_pago_3, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_pago_3
+	,case when nc.fecha_pago_4 is not null then
+	 coalesce(to_char(to_date(nc.fecha_pago_4, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_pago_4
+	,case when nc.fecha_pago_5 is not null then
+	 coalesce(to_char(to_date(nc.fecha_pago_5, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
+    '' end as fecha_pago_5
+	
+    FROM public.sla_00_completo s
+	INNER JOIN public.clientes c on c.id=s.id_cliente::integer
+	LEFT JOIN public.usuario u on u.id=c.fk_ejecutivocuenta
+	LEFT JOIN public.tracking_despacho_retiro tdr on tdr.fk_tracking=s.tracking_id::integer
+	LEFT JOIN public.clientes_direcciones as dir on dir.id=tdr.fk_registro_direccion
+	LEFT JOIN public.comunas on comunas.id=dir.fk_comuna
+	LEFT JOIN public.region on region.id=dir.fk_region
+	LEFT JOIN public.tracking t on t.id=s.tracking_id::integer
+	LEFT JOIN public.contenedor_proforma cp on cp.id=t.fk_proforma
+	LEFT JOIN public.tracking_entrega te on te.fk_tracking=s.tracking_id::integer and te.estado=true
+	LEFT JOIN public.usuario u2 on u2.id=te.fk_usuario 
+	LEFT JOIN public.consolidado cns on cns.id=s.id_consolidado_comercial::integer
+	LEFT JOIN public.despachos d on d.fk_cliente=t.fk_cliente and d.fk_proforma=t.fk_proforma and d.estado=true
+	LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id
             `);
 
             var xl = require('excel4node');
@@ -991,132 +1057,131 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 
                 var row = 1;
                 var col = 1;
-                hoja_1.cell(row,col).string('id_proveedor').style(estilo_cabecera).style(celda_izquierda); col++;
-                hoja_1.cell(row,col).string('nombre_proveedor').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_creacion_proveedor').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('id_cliente').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('razon_social_cliente').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('ejecutivo_comercial').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('ejecutivo_cuenta').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('bultos_esperados').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('m3_esperados').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('peso_esperado').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('bultos_recepcionados').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('bodega_recepcion').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_carga_documentos').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_recepcion_registro_1').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_recepcion_registro_2').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_recepcion_registro_3').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_recepcion_registro_4').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ultima_recepcion_registro_5').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_creacion_del_consolidado').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_cierre_consolidado_comercial').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('id_consolidado_comercial').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('tracking_id').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('proforma_id').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_consolidado_contenedor').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ingreso_datos_contenedor_nave_eta').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('n_contenedor').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('despacho_id').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('nombre_nave').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('etd_nave_asignada').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_nueva_etd_o_eta').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('eta').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('n_carpeta').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_publicacion_aforo').style(estilo_cabecera).style(celda_medio); col++;
-            /* hoja_1.cell(row,28).string('fecha_publicacion').style(estilo_cabecera).style(celda_medio); col++;*/
-                hoja_1.cell(row,col).string('aforo').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_aforo').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_retiro_puerto').style(estilo_cabecera).style(celda_medio); col++;
-                /*hoja_1.cell(row,31).string('fecha_retiro').style(estilo_cabecera).style(celda_medio); col++;*/
-                hoja_1.cell(row,col).string('hora_retiro').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_desconsolidacion_pudahuel').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('hora_desconsolidacion').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('estado_finanzas').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_pago_registro_1').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_pago_registro_2').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_pago_registro_3').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_pago_registro_4').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_de_pago_registro_5').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_solicitud_despacho').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_prog_despacho').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('direccion_entrega').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('comuna').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('tipo_entrega').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_listo_para_entrega').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_ingreso_direccion').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_programada').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_entrega').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('estado_entrega').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('chofer').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('dias_libres').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio); col++;
-                hoja_1.cell(row,col).string('m3_recibidos').style(estilo_cabecera).style(celda_derecha); col++;
+                hoja_1.cell(1,1).string('id_proveedor').style(estilo_cabecera).style(celda_izquierda);
+                hoja_1.cell(1,2).string('nombre_proveedor').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,3).string('fecha_creacion_proveedor').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,4).string('id_cliente').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,5).string('razon_social_cliente').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,6).string('ejecutivo_comercial').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,6).string('ejecutivo_cuenta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,7).string('bultos_esperados').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,8).string('m3_esperados').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,9).string('peso_esperado').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,10).string('bultos_recepcionados').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,11).string('bodega_recepcion').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,12).string('fecha_ultima_carga_documentos').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,13).string('fecha_ultima_recepcion_registro_1').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,13).string('fecha_ultima_recepcion_registro_2').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,13).string('fecha_ultima_recepcion_registro_3').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,13).string('fecha_ultima_recepcion_registro_4').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,13).string('fecha_ultima_recepcion_registro_5').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,14).string('fecha_de_creacion_del_consolidado').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,15).string('fecha_cierre_consolidado_comercial').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,16).string('id_consolidado_comercial').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,17).string('tracking_id').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,18).string('proforma_id').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,19).string('fecha_consolidado_contenedor').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,20).string('fecha_ingreso_datos_contenedor_nave_eta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,21).string('n_contenedor').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,22).string('despacho_id').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,23).string('nombre_nave').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,24).string('etd_nave_asignada').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,25).string('fecha_nueva_etd_o_eta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,26).string('eta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,27).string('n_carpeta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,28).string('fecha_publicacion_aforo').style(estilo_cabecera).style(celda_medio);
+               /* hoja_1.cell(1,28).string('fecha_publicacion').style(estilo_cabecera).style(celda_medio);*/
+                hoja_1.cell(1,29).string('aforo').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,30).string('fecha_prog_aforo').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,31).string('fecha_retiro_puerto').style(estilo_cabecera).style(celda_medio);
+                /*hoja_1.cell(1,31).string('fecha_retiro').style(estilo_cabecera).style(celda_medio);*/
+                hoja_1.cell(1,32).string('hora_retiro').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,33).string('fecha_desconsolidacion_pudahuel').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,34).string('hora_desconsolidacion').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,35).string('estado_finanzas').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_de_pago_registro_1').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_de_pago_registro_2').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_de_pago_registro_3').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_de_pago_registro_4').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_de_pago_registro_5').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_solicitud_despacho').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_prog_despacho').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('direccion_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('comuna').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('tipo_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_listo_para_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,37).string('fecha_ingreso_direccion').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,38).string('fecha_programada').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,39).string('fecha_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,40).string('estado_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,41).string('dias_libres').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,42).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,43).string('m3_recibidos').style(estilo_cabecera).style(celda_derecha);
 
                 
                 for(var i=0; i<Reporte.rows.length; i++)
                 {
                     row++;
                     col = 1;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_proveedor']+''.toString()).style(estilo_contenido_texto).style(celda_izquierda); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['nombre_proveedor']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_creacion_proveedor']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_cliente']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['razon_social_cliente']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['ejecutivo_comercial']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['ejecutivo_cuenta']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bultos_esperados']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_esperados']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['peso_esperado']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bultos_recepcionados']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bodega_recepcion']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ultima_carga_documentos']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ultima_recepcion_registro_1']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_proveedor'].toString()).style(estilo_contenido_texto).style(celda_izquierda); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['nombre_proveedor'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_creacion_proveedor'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_cliente'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['razon_social_cliente'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['ejecutivo_comercial'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['ejecutivo_cuenta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bultos_esperados'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_esperados'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['peso_esperado'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bultos_recepcionados'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['bodega_recepcion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ultima_carga_documentos'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_2'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_3'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_4'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_5'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_de_creacion_del_consolidado'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_cierre_consolidado_comercial'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_consolidado_comercial'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['tracking_id'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['proforma_id'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_consolidado_contenedor'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_datos_contenedor_nave_eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['n_contenedor'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['despacho_id'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['nombre_nave'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['etd_nave_asignada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_nueva_etd_o_eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['n_carpeta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_publicacion_aforo'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['aforo'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_aforo'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_retiro_puerto'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_desconsolidacion_pudahuel'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_2'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_3'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_4'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_5'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_solicitud_despacho'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_prog_despacho'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['direccion_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['comuna'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['tipo_de_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_de_creacion_del_consolidado']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_cierre_consolidado_comercial']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['id_consolidado_comercial']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['tracking_id']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['proforma_id']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_consolidado_contenedor']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_datos_contenedor_nave_eta']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['n_contenedor']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['despacho_id']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['nombre_nave']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['etd_nave_asignada']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_nueva_etd_o_eta']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['eta']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['n_carpeta']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_publicacion_aforo']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['aforo']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_aforo']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_retiro_puerto']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_desconsolidacion_pudahuel']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_de_pago_registro_1']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_solicitud_despacho']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_prog_despacho']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['direccion_entrega']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['comuna']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['tipo_de_entrega']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_direccion']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_entrega']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_entrega']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['chofer']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['dias_libres']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_creacion_cliente']+''.toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_recibidos']+''.toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_direccion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['chofer'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['dias_libres'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_creacion_cliente'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_recibidos'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                 }
 
             } catch (error) {
