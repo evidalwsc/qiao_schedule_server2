@@ -1137,7 +1137,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['bodega_recepcion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ultima_carga_documentos'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_2'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_2'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_3'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_4'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_recepcion_5'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
@@ -1164,11 +1164,11 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_2'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_2'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_3'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_4'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_5'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_solicitud_despacho'].toString()).style(estilo_cotnenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_solicitud_despacho'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_prog_despacho'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['direccion_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['comuna'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
