@@ -1133,7 +1133,6 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                 hoja_1.cell(1,59).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,60).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,61).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,62).string('fecha_listo_entrega').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,63).string('fecha_real_etd').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,64).string('dias_libres_restantes').style(estilo_cabecera).style(celda_derecha);
 
@@ -1192,7 +1191,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fk_direccion_completa'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fk_comuna_nombre']==null ? '':''+Reporte.rows[i]['fk_comuna_nombre'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['tipo_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string('').style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_direccion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
@@ -1203,7 +1202,6 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_recibidos'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_envio_nc'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(Reporte.rows[i]['responsable_entrega']==null ? '':''+Reporte.rows[i]['responsable_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_etd'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(Reporte.rows[i]['dias_libres_restantes']==null ? '':''+Reporte.rows[i]['dias_libres_restantes'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                 }
