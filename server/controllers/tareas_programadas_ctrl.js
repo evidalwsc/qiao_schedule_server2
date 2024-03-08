@@ -743,7 +743,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
             console.log('.::.');
             console.log('Capturando el porte');
             var Reporte = await client.query(`
-            SELECT
+            SELECT DISTINCT s.tracking_id,
     coalesce(s.id_proveedor,'') as id_proveedor
     , coalesce(s.nombre_proveedor,'') as nombre_proveedor
 
@@ -796,7 +796,6 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     '' end as fecha_cierre_consolidado_comercial
 
     , coalesce(s.id_consolidado_comercial,'') as id_consolidado_comercial
-    , coalesce(s.tracking_id,'') as tracking_id
     , coalesce(s.proforma_id,'') as proforma_id
 
     , case when s.fecha_consolidado_contenedor='OK' then s.fecha_consolidado_contenedor
