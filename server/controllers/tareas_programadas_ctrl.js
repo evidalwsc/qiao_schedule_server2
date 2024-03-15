@@ -1203,7 +1203,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     console.log(39);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(40);
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_para_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_listo_para_entrega']==null ? '':''+Reporte.rows[i]['fecha_listo_para_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(41);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(42);
