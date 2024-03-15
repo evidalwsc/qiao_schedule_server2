@@ -840,7 +840,11 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     ,case when t.fk_proforma is not null then
 	coalesce(to_char(cp.fecha_desconsolidado, 'DD/MM/YYYY'),'') else
     '' end as fecha_listo_entrega 
-
+	
+ 	,case when t.fk_proforma is not null then
+	coalesce(to_char(cp.fecha_desconsolidado, 'HH24:mm'),'') else
+    '' end as hora_listo_entrega 
+	
     , coalesce(s.hora_desconsolidacion,'') as hora_desconsolidacion
     , coalesce(s.estado_finanzas,'') as estado_finanzas
 
@@ -944,6 +948,12 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     '' end as fecha_pago_5
     ,
 	DATE_PART('day',(cp.fecha_retiro_puerto + cnt.dias_libres * interval '1 day' - CURRENT_TIMESTAMP))  as dias_libres_restantes
+	, coalesce(t.fecha_pago_1,'') as fecha_pago_1
+	, coalesce(t.fecha_pago_2,'') as fecha_pago_2
+	, coalesce(t.fecha_pago_3,'') as fecha_pago_3
+	, coalesce(t.fecha_pago_4,'') as fecha_pago_4
+	, coalesce(t.fecha_pago_5,'') as fecha_pago_5
+	
 	
     FROM public.sla_00_completo s
 	INNER JOIN public.clientes c on c.id=s.id_cliente::integer
@@ -1124,16 +1134,14 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                 hoja_1.cell(1,51).string('comuna').style(estilo_cabecera).style(celda_medio);
                 hoja_1.cell(1,52).string('tipo_entrega').style(estilo_cabecera).style(celda_medio);
                 hoja_1.cell(1,53).string('fecha_listo_para_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,54).string('fecha_ingreso_direccion').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,55).string('fecha_programada').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,56).string('fecha_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,57).string('estado_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,58).string('chofer').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,59).string('dias_libres').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,60).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,61).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,62).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,63).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,54).string('fecha_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,55).string('estado_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,56).string('chofer').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,57).string('dias_libres').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,58).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,59).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,60).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,61).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
                 
 
                 
@@ -1203,9 +1211,9 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     console.log(39);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(40);
-                    hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_listo_para_entrega']==null ? '':''+Reporte.rows[i]['fecha_listo_para_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_listo_entrega']==null ? '':''+Reporte.rows[i]['fecha_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(41);
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(Reporte.rows[i]['hora_listo_entrega']==null ? '':''+Reporte.rows[i]['hora_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(42);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(43);
@@ -1231,9 +1239,6 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     console.log(53);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     console.log(54);
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_direccion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    console.log(55);
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(56);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(57);
