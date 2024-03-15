@@ -1103,37 +1103,38 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                 hoja_1.cell(1,30).string('fecha_nueva_etd_o_eta').style(estilo_cabecera).style(celda_medio);
                 hoja_1.cell(1,31).string('eta').style(estilo_cabecera).style(celda_medio);
                 hoja_1.cell(1,32).string('n_carpeta').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,33).string('fecha_prog_aforo').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,34).string('fecha_real_aforo').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,35).string('fecha_real_eta').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,36).string('fecha_retiro_puerto').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,37).string('hora_retiro').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,38).string('fecha_desconsolidacion_pudahuel').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,39).string('hora_desconsolidacion').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,40).string('estado_finanzas').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,41).string('fecha_de_pago_registro_1').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,42).string('fecha_de_pago_registro_2').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,43).string('fecha_de_pago_registro_3').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,44).string('fecha_de_pago_registro_4').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,45).string('fecha_de_pago_registro_5').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,46).string('fecha_solicitud_despacho').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,47).string('fecha_prog_despacho').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,48).string('direccion_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,49).string('comuna').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,50).string('tipo_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,51).string('fecha_listo_para_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,52).string('fecha_ingreso_direccion').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,53).string('fecha_programada').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,54).string('fecha_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,55).string('estado_entrega').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,56).string('chofer').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,57).string('dias_libres').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,58).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio);
-                hoja_1.cell(1,59).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,60).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,61).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,63).string('fecha_real_etd').style(estilo_cabecera).style(celda_derecha);
-                hoja_1.cell(1,64).string('dias_libres_restantes').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,33).string('fecha_real_etd').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,34).string('dias_libres_restantes').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,35).string('fecha_prog_aforo').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,36).string('fecha_real_aforo').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,37).string('fecha_real_eta').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,38).string('fecha_retiro_puerto').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,39).string('hora_retiro').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,40).string('fecha_desconsolidacion_pudahuel').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,41).string('hora_desconsolidacion').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,42).string('estado_finanzas').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,43).string('fecha_de_pago_registro_1').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,44).string('fecha_de_pago_registro_2').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,45).string('fecha_de_pago_registro_3').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,46).string('fecha_de_pago_registro_4').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,47).string('fecha_de_pago_registro_5').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,48).string('fecha_solicitud_despacho').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,49).string('fecha_prog_despacho').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,50).string('direccion_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,51).string('comuna').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,52).string('tipo_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,53).string('fecha_listo_para_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,54).string('fecha_ingreso_direccion').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,55).string('fecha_programada').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,56).string('fecha_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,57).string('estado_entrega').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,58).string('chofer').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,59).string('dias_libres').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,60).string('fecha_creacion_cliente').style(estilo_cabecera).style(celda_medio);
+                hoja_1.cell(1,61).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,62).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,63).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
+                
 
                 
                 for(var i=0; i<Reporte.rows.length; i++)
@@ -1172,12 +1173,14 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_nueva_etd_o_eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['n_carpeta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_etd'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    hoja_1.cell(row,col).string(Reporte.rows[i]['dias_libres_restantes']==null ? '':''+Reporte.rows[i]['dias_libres_restantes'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_publicacion_aforo'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_aforo'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_retiro_puerto'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_desconsolidacion_pudahuel'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_para_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_pago_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
@@ -1201,8 +1204,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_recibidos'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_envio_nc'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
                     hoja_1.cell(row,col).string(Reporte.rows[i]['responsable_entrega']==null ? '':''+Reporte.rows[i]['responsable_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_etd'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
-                    hoja_1.cell(row,col).string(Reporte.rows[i]['dias_libres_restantes']==null ? '':''+Reporte.rows[i]['dias_libres_restantes'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    
                 }
 
             } catch (error) {
