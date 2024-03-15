@@ -1200,32 +1200,57 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_real_eta'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(38);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_retiro_puerto'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(39);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_retiro'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(40);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_para_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(41);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['hora_desconsolidacion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(42);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_finanzas'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(43);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_pago_1']==null ? '':''+Reporte.rows[i]['fecha_pago_1'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(44);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_pago_2']==null ? '':''+Reporte.rows[i]['fecha_pago_2'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(45);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_pago_3']==null ? '':''+Reporte.rows[i]['fecha_pago_3'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(46);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_pago_4']==null ? '':''+Reporte.rows[i]['fecha_pago_4'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(47);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fecha_pago_5']==null ? '':''+Reporte.rows[i]['fecha_pago_5'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(48);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_solicitud_despacho'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(49);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(50);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fk_direccion_completa'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(51);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['fk_comuna_nombre']==null ? '':''+Reporte.rows[i]['fk_comuna_nombre'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(52);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['tipo_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(53);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_listo_entrega'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    console.log(54);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_ingreso_direccion'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(55);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_programada'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(56);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(57);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['estado_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(58);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['chofer'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(59);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['dias_libres']==null ? '':''+Reporte.rows[i]['dias_libres'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(60);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_creacion_cliente'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
+                    console.log(61);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['m3_recibidos'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    console.log(62);
                     hoja_1.cell(row,col).string(''+Reporte.rows[i]['fecha_envio_nc'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    console.log(63);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['responsable_entrega']==null ? '':''+Reporte.rows[i]['responsable_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
-                    
+                    console.log(64);
                 }
 
             } catch (error) {
