@@ -743,7 +743,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
             console.log('.::.');
             console.log('Capturando el porte');
             var Reporte = await client.query(`
-            SELECT DISTINCT s.tracking_id,
+            SELECT DISTINCT t.id as tracking_id,
     coalesce(s.id_proveedor,'') as id_proveedor
     , coalesce(s.nombre_proveedor,'') as nombre_proveedor
 
@@ -872,8 +872,9 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 	,case when tdr.fk_registro_direccion is not null then comunas.nombre else '' end as fk_comuna_nombre
     ,region.id as fk_region
 	,case when tdr.fk_registro_direccion is not null then region.nombre else '' end as fk_region_nombre
-	,case when te.fecha_programada is not null then coalesce(to_char(te.fecha_programada, 'DD/MM/YYYY'),'') else
-    '' end as fecha_programada 
+	/*,case when te.fecha_programada is not null then coalesce(to_char(te.fecha_programada, 'DD/MM/YYYY'),'') else
+    '' end as fecha_programada */
+	,(SELECT te.fecha_programada FROM tracking_entrega te where te.fk_tracking=t.id and te.estado=true order by te.id desc limit 1) as fecha_programada
 	,case when tdr.fecha is not null then coalesce(to_char(tdr.fecha, 'DD/MM/YYYY'),'') else
     '' end as fecha_solicitud_despacho 
 	,CASE 
@@ -885,7 +886,10 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                     WHEN tdr.fk_registro_direccion is not null and dir.fk_region=12 and dir.fk_region is not null and dir.fk_comuna in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'REVISAR DESPACHO GRATUITO NO INCLUIDO'
                     WHEN tdr.fk_registro_direccion is not null and dir.fk_region=12 and dir.fk_region is not null and dir.fk_comuna not in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'DESPACHO GRATIS INCLUIDO'
                     ELSE 'SIN ESPECIFICAR' END tipo_entrega
-	,CASE WHEN te.estado_entrega=1 then 'ENTREGADO' WHEN te.estado_entrega=2 then 'PARCIAL' ELSE '' END as estado_entrega
+	/*,CASE WHEN te.estado_entrega=1 then 'ENTREGADO' WHEN te.estado_entrega=2 then 'PARCIAL' ELSE '' END as estado_entrega*/
+	,CASE WHEN (SELECT te.estado_entrega FROM tracking_entrega te where te.fk_tracking=t.id and te.estado=true order by te.id desc limit 1)=1 then 'ENTREGADO'
+	WHEN (SELECT te.estado_entrega FROM tracking_entrega te where te.fk_tracking=t.id and te.estado=true order by te.id desc limit 1)=1 then 'PARCIAL'
+	ELSE '' END estado_entrega
     ,case when t.fk_proforma is not null then
 	coalesce(to_char(cp.fecha_salida_puerto, 'DD/MM/YYYY'),'') else
     '' end as fecha_real_etd
@@ -904,17 +908,23 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 	,case when t.fk_proforma is not null then
 	coalesce(to_char(cp.fecha_retiro_puerto, 'DD/MM/YYYY'),'') else
     '' end as fecha_retiro_puerto 
-	,CASE
+	,coalesce((SELECT coalesce(CONCAT(u2.nombre,' ',u2.apellidos),'') FROM usuario u2 inner join public.tracking_entrega te on u2.id=te.fk_usuario where te.fk_tracking=t.id and te.estado=true order by te.id desc limit 1),'') as responsable_entrega
+	/*,CASE
       WHEN te.id IS NOT NULL THEN
       coalesce(CONCAT(u2.nombre,' ',u2.apellidos),'')
       ELSE
       null 
-      END as responsable_entrega
+      END as responsable_entrega*/
+	  ,coalesce((select nc."m3" from public.notas_cobros nc inner join public.despachos d on d.id=nc.fk_despacho where t.fk_cliente=d.fk_cliente and t.fk_proforma=d.fk_proforma and d.estado=true order by d.id desc limit 1), 0) as m3
+	  /*
 	 ,case when nc."m3" is not null then
 	nc."m3" else
     0 end as m3
 	,case when s.id_consolidado_comercial is not null and s.id_consolidado_comercial!='' then
 	coalesce(to_char(d."createdAt", 'DD/MM/YYYY'),'') else
+    '' end as fecha_envio_nc*/
+	,case when s.id_consolidado_comercial is not null and s.id_consolidado_comercial!='' then
+	coalesce(to_char((select d."createdAt" from public.despachos d where t.fk_cliente=d.fk_cliente and t.fk_proforma=d.fk_proforma and d.estado=true order by d.id desc limit 1), 'DD/MM/YYYY'),'') else
     '' end as fecha_envio_nc
 	,case when t.fecha_recepcion_1 is not null then
 	 coalesce(to_char(to_date(t.fecha_recepcion_1, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
@@ -931,7 +941,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 	,case when t.fecha_recepcion_5 is not null then
 	 coalesce(to_char(to_date(t.fecha_recepcion_5, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
     '' end as fecha_recepcion_5
-	,case when nc.fecha_pago_1 is not null then
+	/*,case when nc.fecha_pago_1 is not null then
 	 coalesce(to_char(to_date(nc.fecha_pago_1, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
     '' end as fecha_pago_1
 	,case when nc.fecha_pago_2 is not null then
@@ -945,7 +955,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     '' end as fecha_pago_4
 	,case when nc.fecha_pago_5 is not null then
 	 coalesce(to_char(to_date(nc.fecha_pago_5, 'DD/MM/YYYY'), 'DD/MM/YYYY'),'') else
-    '' end as fecha_pago_5
+    '' end as fecha_pago_5*/
     ,
 	DATE_PART('day',(cp.fecha_retiro_puerto + cnt.dias_libres * interval '1 day' - CURRENT_TIMESTAMP))  as dias_libres_restantes
 	, coalesce(t.fecha_pago_1,'') as fecha_pago_1
@@ -958,18 +968,19 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     FROM public.sla_00_completo s
 	INNER JOIN public.clientes c on c.id=s.id_cliente::integer
 	LEFT JOIN public.usuario u on u.id=c.fk_ejecutivocuenta
-	LEFT JOIN public.tracking_despacho_retiro tdr on tdr.fk_tracking=s.tracking_id::integer
+	LEFT JOIN public.tracking_despacho_retiro tdr on tdr.fk_tracking=s.tracking_id::integer and tdr.estado=true
 	LEFT JOIN public.clientes_direcciones as dir on dir.id=tdr.fk_registro_direccion
 	LEFT JOIN public.comunas on comunas.id=dir.fk_comuna
 	LEFT JOIN public.region on region.id=dir.fk_region
 	LEFT JOIN public.tracking t on t.id=s.tracking_id::integer
 	LEFT JOIN public.contenedor_proforma cp on cp.id=t.fk_proforma
     LEFT JOIN public.contenedor cnt on cnt.id=cp.fk_contenedor
-	LEFT JOIN public.tracking_entrega te on te.fk_tracking=s.tracking_id::integer and te.estado=true
-	LEFT JOIN public.usuario u2 on u2.id=te.fk_usuario 
+	/*LEFT JOIN public.tracking_entrega te on te.fk_tracking=t.id::integer and te.estado=true*/
+
+	/*LEFT JOIN public.usuario u2 on u2.id=te.fk_usuario */
 	LEFT JOIN public.consolidado cns on cns.id=s.id_consolidado_comercial::integer
-	LEFT JOIN public.despachos d on d.fk_cliente=t.fk_cliente and d.fk_proforma=t.fk_proforma and d.estado=true
-	LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id
+	/*LEFT JOIN public.despachos d on d.fk_cliente=t.fk_cliente and d.fk_proforma=t.fk_proforma and d.estado=true
+	LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id and nc.estado=true order by t.id asc*/
             `);
 
             var xl = require('excel4node');
