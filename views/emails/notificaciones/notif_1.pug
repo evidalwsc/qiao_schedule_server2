@@ -89,6 +89,8 @@ html(lang="en")
                     p(class='texto') Si tu servicio se encuentra con el pago validado puedes agendar la solicitud de entrega haciendo click en el botón 
                         a.button(href=`${host}/solicitud_agendamiento/${datosAdicionales.encrypt_fk_consolidado}`) SOLICITAR ENTREGA
 
+                p(class='texto') Te recordamos que desde hoy, tienes un plazo máximo de 10 días corridos para gestionar la entrega de tu carga, posterior a eso se te cobrará una tarifa de almacenaje de $1.000 CLP día por m3 como mínimo.
+
                 if(datosAdicionales!=null && datosAdicionales.texto_complementario)
                     each txt in datosAdicionales.texto_complementario.length ? datosAdicionales.texto_complementario :['SIN CONTENIDO']
                         p(class='texto') #{txt}
