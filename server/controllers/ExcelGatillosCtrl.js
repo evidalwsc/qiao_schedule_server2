@@ -22,3 +22,18 @@ exports.DownloadReporteGatilo = async (req,res) =>{ try {
         success:false,
     }); res.end(); res.connection.destroy();
 }};
+
+exports.DownloadReporteGatilo2= async (req,res) =>{ try {
+
+    res.status(200).send({
+        message: "CORRECTO",
+        success:true,
+    }); res.end(); res.connection.destroy();
+
+} catch (error) {
+    console.log("ERROR "+error);
+    res.status(400).send({
+        message: "ERROR AL CARGAR EL ARCHIVO",
+        success:false,
+    }); res.end(); res.connection.destroy();
+}};
