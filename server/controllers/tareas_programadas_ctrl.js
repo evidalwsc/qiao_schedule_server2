@@ -1311,7 +1311,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
         console.log(moment().format("DD-MM-YYYY HH:mm")+'\n\n');
     var shc_ProcesarExcelGatillos = require('node-schedule');
     const rule = new shc_ProcesarExcelGatillos.RecurrenceRule();
-    rule.hour = 7;
+    rule.hour = 08;
     rule.minute = 30;
 
     shc_ProcesarExcelGatillos.scheduleJob(rule, () => {
@@ -1320,7 +1320,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 
     async function function_ProcesarExcelGatillos_CronJob(){
         var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
-        await client.query(`update public.excel_despachos set mensaje_carga ='01.- ARCHIVO CARGADO',fecha_carga='`+fecha_carga+`'`);
+        await client.query(`update public.excel_despachos set mensaje_carga ='01.- ARCHIVO CARGADO',fecha_carga='`+fecha_carga+`', link_archivo=''`);
 
         
         var ExistenDatos = await client.query(` select * FROM public.excel_despachos WHERE mensaje_carga='01.- ARCHIVO CARGADO'`);
