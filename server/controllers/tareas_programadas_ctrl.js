@@ -1319,6 +1319,52 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
     });
 
     async function function_ProcesarExcelGatillos_CronJob(){
+        let result=await client.query(`SELECT id FROM public.tracking where fecha_recepcion_1 is null and estado>=0 order by id asc`);
+		if(result && result.rows && result.rows.length>0){
+			for(i=0;i<result.rows.length;i++){
+				let r=await client.query(`select
+				distinct fecha_recepcion,
+				to_char( fecha_recepcion, 'DD/MM/YYYY') as fecha_format
+				from public.tracking_detalle
+				where tracking_id=`+result.rows[i].id+` order by fecha_recepcion asc`);
+				console.log(result.rows[i].id);
+				if(r && r.rows && r.rows.length>0){
+					//if(r.rows.length<=5){
+						for(x=0;x<r.rows.length;x++){
+							if(x==0){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_1='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==1){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_2='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==2){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_3='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==3){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_4='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==4){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_5='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}
+						}
+					/*}else if(r.rows.length>5){
+						console.log('mas de 5:'+result.rows[i].id);
+						for(x=0;x<4;x++){
+							if(x==0){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_1='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==1){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_2='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==2){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_3='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}else if(x==3){
+								await client.query(`UPDATE public.tracking SET fecha_recepcion_4='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
+							}	
+						}
+						await client.query(`UPDATE public.tracking SET fecha_recepcion_5='`+r.rows[r.rows.length-1].fecha_format+`' where id=`+result.rows[i].id);
+					}*/
+				}
+				if(i==result.rows.length-1){
+					console.log('ultimo');
+				}
+			}
+			console.log('terminado paso 1');
+		}
         var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
         await client.query(`update public.excel_despachos set mensaje_carga ='01.- ARCHIVO CARGADO',fecha_carga='`+fecha_carga+`', link_archivo=''`);
 
