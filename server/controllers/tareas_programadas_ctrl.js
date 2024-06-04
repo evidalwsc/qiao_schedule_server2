@@ -309,24 +309,30 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else
                 {
-                    
-                    if( Correo.rows[0]['adjunto']=='' || Correo.rows[0]['adjunto']==null )
+                    if( Correo.rows[0]['tipo_id']=='999' || Correo.rows[0]['tipo_id']=='1000' || Correo.rows[0]['tipo_id']==999 || Correo.rows[0]['tipo_id']==1000)
                     {
-                        await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
-                        EstadoCorreo = await enviarEmail.mail_notificacion_1({
-                            asunto:Correo.rows[0]['asunto'],
-                            nombreUsuario:Correo.rows[0]['nombre'],
-                            texto:JSON.parse(Correo.rows[0]['texto']),
-                            fecha:Correo.rows[0]['fecha'],
-                            email:Correo.rows[0]['para'],
-                            comercial:JSON.parse(Correo.rows[0]['comercial']),
-                            tracking_id:Correo.rows[0]['tracking_encrypt'],
-                            host:Correo.rows[0]['enlace'],
-                        });
-                        
+                        console.log('PASO 2');
                     }
-                    ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
-                }
+                    else
+                    {
+                        if( Correo.rows[0]['adjunto']=='' || Correo.rows[0]['adjunto']==null )
+                        {
+                            await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
+                            EstadoCorreo = await enviarEmail.mail_notificacion_1({
+                                asunto:Correo.rows[0]['asunto'],
+                                nombreUsuario:Correo.rows[0]['nombre'],
+                                texto:JSON.parse(Correo.rows[0]['texto']),
+                                fecha:Correo.rows[0]['fecha'],
+                                email:Correo.rows[0]['para'],
+                                comercial:JSON.parse(Correo.rows[0]['comercial']),
+                                tracking_id:Correo.rows[0]['tracking_encrypt'],
+                                host:Correo.rows[0]['enlace'],
+                            });
+                            
+                        }
+                        ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
+                        }
+                    }
             }
             else if( Correo.rows[0]['tipo']=='mail_notificacion_pago' )
             {
