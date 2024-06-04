@@ -1,4 +1,5 @@
 const client = require('../server/config/db.client');
+const clientTnm = require('../server/config/db.client.tnm');
 const nodemailer = require('nodemailer');
 const juice = require('juice');
 const htmltoText = require('html-to-text');
@@ -478,11 +479,11 @@ exports.mail_notificacion_contenedor_proforma = async(opciones) => {
             opciones.comercial=comercial.rows[0];
             }
 
+            let asunto=await reemplazar_metadatos_asunto(opciones.asunto,opciones.servicios[i]);
             let timeLineData=await get_data_time_linea(opciones.servicios[i].fk_servicio);
             opciones.timeline=timeLineData;
             const html = view_mail_notificacion_contenedor_proforma(opciones);
             const text = htmltoText.fromString(html);
-            let asunto=await reemplazar_metadatos_asunto(opciones.asunto,opciones.servicios[i]);
             let filterEmails=[];
             if(opciones.emails && opciones.emails.length>0){
                 filterEmails=opciones.emails.filter(x=>x.fk_cliente==opciones.servicios[i].fk_cliente);
@@ -770,8 +771,7 @@ const view_mail_notificacion_1 = (opciones) => {
 }
 
 exports.mail_notificacion_1 = async(opciones) => {
-    const html = view_mail_notificacion_1(opciones);
-    const text = htmltoText.fromString(html);
+   
     let remitente='wscargo@wscargo.cl';
    /* if(opciones && opciones.comercial && opciones.comercial!=null && opciones.comercial.email && opciones.comercial.email!=null){
         remitente=opciones.comercial.email;
@@ -881,6 +881,15 @@ exports.mail_notificacion_1 = async(opciones) => {
             }
         }
     }
+
+    if(opciones.timeline && opciones.timeline!=null){
+        let timeLineData=await get_data_time_linea(opciones.timeline);
+        opciones.timeline=timeLineData;
+     }
+     const html = view_mail_notificacion_1(opciones);
+     const text = htmltoText.fromString(html);
+     opcionesEmailWsc.text=text;
+     opcionesEmailWsc.html=html;
 
     var estado = await transport_TNM.sendMail(opcionesEmailWsc).then(function(info){
         console.log("info",info);
@@ -1091,6 +1100,125 @@ const get_data_time_linea =async(fk_servicio)=>{
     let fecha = '';
     let yaLlegoAunoSin = false;
 
+
+    let sql1=`SELECT c.id as fk_consolidado,
+    (select t.fk_proforma from public.tracking t inner join public.consolidado_tracking ct on ct.fk_tracking=t.id where ct.fk_consolidado=c.id and ct.estado>=0 order by ct.id desc limit 1) as fk_proforma
+    from public.consolidado c
+    inner join public.gc_propuestas_cabeceras gc on gc.id=c.fk_propuesta
+    where gc.fk_servicio=`+fk_servicio;
+    let result1=await client.query(sql1);
+    if(result1 && result1.rows && result1.rows.length>0){
+        let sql2=`SELECT 
+        fecha_retiro_puerto,
+        fecha_prog_aforo,
+        fecha_real_aforo,
+        fecha_consolidado
+        FROM public.contenedor_proforma where id=`+result1.rows[0].fk_proforma;
+        let result2=await client.query(sql2);
+
+        if(result2 && result2.rows && result2.rows.length>0){
+            let find=result.rows.findIndex(x=>x.texto=='Carga consolidada');
+            if(find>=0){
+                if(result2.rows[0].fecha_consolidado!=null){
+                    result.rows[find].fecha=result2.rows[0].fecha_consolidado;
+                }
+            }else{
+                if(result2.rows[0].fecha_consolidado!=null){
+                    result.rows.push({texto:'Carga consolidada',fecha:result2.rows[0].fecha_consolidado,fk_servicio:fk_servicio}); 
+                }
+            }
+
+            let find2=result.rows.findIndex(x=>x.texto=='Programación aforo');
+            if(find2>=0){
+                if(result2.rows[0].fecha_prog_aforo!=null){
+                    result.rows[find2].fecha=result2.rows[0].fecha_prog_aforo;
+                }
+            }else{
+                if(result2.rows[0].fecha_prog_aforo!=null){
+                    result.rows.push({texto:'Programación aforo',fecha:result2.rows[0].fecha_prog_aforo,fk_servicio:fk_servicio}); 
+                }
+            }
+
+            let find3=result.rows.findIndex(x=>x.texto=='Real aforo');
+            if(find3>=0){
+                if(result2.rows[0].fecha_real_aforo!=null){
+                    result.rows[find3].fecha=result2.rows[0].fecha_real_aforo;
+                }
+            }else{
+                if(result2.rows[0].fecha_real_aforo!=null){
+                    result.rows.push({texto:'Real aforo',fecha:result2.rows[0].fecha_real_aforo,fk_servicio:fk_servicio}); 
+                }
+            }
+
+            let find4=result.rows.findIndex(x=>x.texto=='Retiro de puerto');
+            if(find4>=0){
+                if(result2.rows[0].fecha_retiro_puerto!=null){
+                    result.rows[find4].fecha=result2.rows[0].fecha_retiro_puerto;
+                    result.rows[find4].texto='Arribo puerto de destino';
+                }
+            }else{
+                if(result2.rows[0].fecha_retiro_puerto!=null){
+                    result.rows.push({texto:'Arribo puerto de destino',fecha:result2.rows[0].fecha_retiro_puerto,fk_servicio:fk_servicio,estado:true}); 
+                }
+            }
+        }
+
+        let sql3=`SELECT cp.id,
+        cp.fk_contenedor,
+        c.codigo as fk_contenedor_nombre,
+        (SELECT n2.nave_nombre FROM naves2 n2 LEFT JOIN naves_eta ne on ne.fk_nave=n2.nave_id LEFT JOIN contenedor_viajes_detalle cvd on cvd.fk_nave_eta=ne.id LEFT JOIN contenedor_tracking ct on ct.id=cvd.fk_contenedor_tracking  where ct.id=cp.fk_contenedor_tracking and ne.estado<2 order by ne.id asc limit 1) as nave_nombre
+        FROM public.contenedor_proforma cp
+        left join contenedor c on c.id=cp.fk_contenedor
+        where cp.id=`+result1.rows[0].fk_proforma+`
+        ORDER BY cp.id DESC`;
+        let result3=await client.query(sql3);
+        if(result3 && result3.rows && result3.rowCount>0){
+            let sqlTnm=`select
+                        cli_fact.cli_nombre as cli_fact_nombre
+                        , cli_desp.cli_nombre as cli_desp_nombre
+                        
+                        , coalesce(nave.nave_imo,0) as servicio_nave_imo
+                        , coalesce(nave.nave_id,0) as servicio_nave_id
+                        , coalesce(nave.nave_nombre,'') as servicio_nave_nombre
+                        , coalesce(eta.eta_fecha,'') as eta_fecha
+                        , coalesce(eta.eta_hora,'') as eta_hora
+                        
+                        , ser.numero_contenedor
+                        
+                        , coalesce(eta_1.fecha, '') as etapa_1_fecha
+                        , coalesce(eta_1.hora, '') as etapa_1_hora
+                        , coalesce(dir_1.nombre,'') as etapa_1_lugar_nombre
+                        
+                        , coalesce(eta_2.fecha, '') as etapa_2_fecha
+                        , coalesce(eta_2.hora, '') as etapa_2_hora
+                        , coalesce(dir_2.nombre,'') as etapa_2_lugar_nombre
+                        
+                        from
+                        public.servicios as ser
+                        left join public.clientes as cli_fact on ser.fk_cliente_facturacion=cli_fact.cli_codigo
+                        left join public.clientes as cli_desp on ser.fk_cliente_despacho=cli_desp.cli_codigo
+                        left join public.naves as nave on ser.fk_nave=nave.nave_id
+                        left join public.naves_etas as eta on ser.fk_eta=eta.eta_id
+                        
+                        left join public.servicios_etapas as eta_1 on ser.id=eta_1.fk_servicio and eta_1.tipo=1
+                        left join public.direcciones as dir_1 on eta_1.fk_direccion=dir_1.id
+                        left join public.comunas as com_1 on dir_1."comunaComunaId"=com_1.comuna_id
+                        
+                        left join public.servicios_etapas as eta_2 on ser.id=eta_2.fk_servicio and eta_2.tipo=2
+                        left join public.direcciones as dir_2 on eta_2.fk_direccion=dir_2.id
+                        
+                        where
+                        ser.estado!=999
+                        and replace(ser.numero_contenedor, '-', '') = '`+result3.rows[0].fk_contenedor_nombre+`' and nave.nave_nombre='`+result3.rows[0].nave_nombre+`'`;
+
+                        let rTnm=await clientTnm.query(sqlTnm);
+                
+                        if(rTnm && rTnm.rows && rTnm.rowCount>0){
+                            result.rows.push({texto:'Contenedor retirado de puerto',fecha:moment(rTnm.rows[0].etapa_1_fecha,'DD-MM-YYYY').format('YYYY-MM-DDT00:00:00'),fk_servicio:fk_servicio}); 
+                        }
+                    }
+    }
+
     for (let i = 0; i < resultTimeLine.rows.length; i++) {
         // Si no es el ultimo item
         if (i < resultTimeLine.rows.length - 1) {
@@ -1110,6 +1238,7 @@ const get_data_time_linea =async(fk_servicio)=>{
                 aux.push({
                 id: item.id,
                 texto: item.texto,
+                history:item.history,
                 estado: '1',
                 fechaEstimada: moment(existeHistory.fecha).format('DD/MM/YY'),
                 });
@@ -1118,13 +1247,14 @@ const get_data_time_linea =async(fk_servicio)=>{
                 // Obtener la fecha estimada, si fecha y fechaEstimada estan definidas
                 let fecha_proxima = '';
                 if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
-                    fecha_proxima = `Fecha estimada entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')}`;
+                    fecha_proxima = `Estimado entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')}`;
                 }
                 yaLlegoAunoSin = true;
 
                 aux.push({
                     id: item.id,
                     texto: item.texto,
+                    history:item.history,
                     estado: '-1',
                     fechaEstimada: fecha_proxima
                 });
@@ -1140,19 +1270,20 @@ const get_data_time_linea =async(fk_servicio)=>{
                 aux.push({
                     id: item.id,
                     texto: item.texto,
+                    history:item.history,
                     estado: '1',
                     fechaEstimada: moment(existeHistory.fecha).format('DD/MM/YY')
                 })
             } else {
-
                 let fecha_proxima = '';
                 if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
-                    fecha_proxima = `Fecha estimada entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')} `;
+                    fecha_proxima = `Estimado entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')} `;
                 }
                 
                 aux.push({
                 id: item.id,
                 texto: item.texto,
+                history:item.history,
                 estado: '-1',
                 fechaEstimada: fecha_proxima
                 });
@@ -1160,5 +1291,49 @@ const get_data_time_linea =async(fk_servicio)=>{
         }
     }
 
+    let ultimoCumplido = null;
+    let proximoPorCumplir = null;
+    for (let i = 0; i < aux.length; i++) {
+        if (aux[i].estado=='1') {
+        ultimoCumplido = aux[i];
+        } else if (proximoPorCumplir === null && !aux[i].estado!='1') {
+            proximoPorCumplir = aux[i];
+        }
+    }
+
+
+    let findI=-1;
+    let findI2=-1;
+
+    findI=aux.findIndex(x=>x.id==ultimoCumplido.id);
+    if(proximoPorCumplir!=null){
+     findI2=aux.findIndex(x=>x.id==proximoPorCumplir.id);
+    }
+
+    
+    for (let i = 0; i < aux.length; i++) {
+        /**Marco todos los items antes del ultimo cumplido */
+        if(i<=findI && aux[i].estado=='-1'){
+            aux[i].estado='1';
+           // aux[i].fecha='S/I';
+            aux[i].fechaEstimada='S/I';
+        }
+       
+    }
+
+    if(findI>=0 && findI!=aux.length-1){
+        let fechaUltimo=moment(ultimoCumplido.fechaEstimada,'DD/MM/YYYY');
+        let fEstimada=resultFechasEstimadas.rows.find((f) => f.title === proximoPorCumplir.history);
+        if(fEstimada!=='undefined' && fEstimada !== undefined && findI2>=0){
+            aux[findI2].fechaEstimada=`Estimado entre ${moment(fechaUltimo).subtract(fEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fechaUltimo).add(fEstimada.rango_superior, 'days').format('DD/MM/YY')} `;
+        }
+       aux[aux.length-1].fechaEstimada=`Estimado entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')} `;;
+    }
+
+   
+   // console.log('ultimoCumplido',ultimoCumplido);
+    //console.log('proximoPorCumplir',proximoPorCumplir);
+    //console.log('');
+    console.log(aux);
     return aux;
 }
