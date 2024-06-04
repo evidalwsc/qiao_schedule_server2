@@ -178,7 +178,9 @@ exports.mail_envios_server2 = async (req, resp) => {
                         host:Correo.rows[0]['enlace'],
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        datos_adicionales:JSON.parse(Correo.rows[0]['datos_adicionales']),
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -1310,6 +1312,115 @@ exports.ProcesarExcelGatillos = async (req, res) => {
     }
 };
 
+async function updateDataSla00(){
+    try{
+    let sql1=`UPDATE public.sla_00_completo 
+    set ejecutivo_cuenta=(
+    SELECT CONCAT(coalesce(u.nombre,''),' ',coalesce(u.apellidos,''))  from public.usuario u inner join public.clientes c on c.fk_ejecutivocuenta=u.id where c.id=public.sla_00_completo.id_cliente::integer and c.fk_ejecutivocuenta is not null
+    ) where ejecutivo_cuenta is null;`;
+
+    let sql2=`UPDATE public.sla_00_completo
+    set fecha_solicitud_despacho=(
+    SELECT to_char( tdr.fecha, 'DD/MM/YYYY') from public.tracking_despacho_retiro tdr where tdr.fk_tracking=public.sla_00_completo.tracking_id::integer and tdr.estado=true order by id desc limit 1
+    ) where fecha_solicitud_despacho is null;`;
+
+    let sql3=`UPDATE public.sla_00_completo
+    set fecha_prog_despacho=(
+    SELECT to_char( te.fecha_programada, 'DD/MM/YYYY') from public.tracking_entrega te where te.fk_tracking=public.sla_00_completo.tracking_id::integer and te.estado=true order by id desc limit 1
+    ) where fecha_prog_despacho is null;`;
+
+    let sql4=`UPDATE public.sla_00_completo
+    set estado_entrega=(
+        SELECT CASE WHEN te.estado_entrega=1 then 'ENTREGADO' WHEN te.estado_entrega=2 then 'PARCIAL' ELSE null END
+        FROM public.tracking_entrega te where te.fk_tracking=public.sla_00_completo.tracking_id::integer and te.estado=true order by id desc limit 1	
+    ) where estado_entrega is null;`;
+
+    let sql5=`UPDATE public.sla_00_completo
+    set chofer=(
+        SELECT CONCAT(coalesce(te.conductor_nombre,''),' ',coalesce(te.conductor_apellido,'')) FROM public.tracking_entrega te where te.fk_tracking=public.sla_00_completo.tracking_id::integer and te.estado=true and te.conductor_nombre is not null order by id desc limit 1
+    ) where chofer is null;`;
+
+    let sql6=`UPDATE public.sla_00_completo
+    set fecha_aprobacion_documentos=(
+        SELECT to_char( t.fecha_ultima_carga_documento, 'DD/MM/YYYY') FROM public.tracking t where t.id=public.sla_00_completo.tracking_id::integer
+    ) where fecha_aprobacion_documentos is null;`;
+
+    let sql7=`UPDATE public.sla_00_completo
+    set tipo_de_entrega=(
+        SELECT CASE 
+        WHEN tdr.fk_bodega is not null then 'RETIRO' 
+        WHEN tdr.empresa_ext_retiro is not null then 'RETIRA TRANS.EXTERNO' 
+        WHEN tdr.empresa_ext_despacho is not null then 'DESPACHO TRANS.EXTERNO' 
+        WHEN tdr.fk_registro_direccion is null and tdr.fk_bodega is null and tdr.empresa_ext_retiro is null and tdr.empresa_ext_despacho is null then 'SIN ESPECIFICAR'
+        WHEN tdr.fk_registro_direccion is not null and cd.fk_region!=12 and cd.fk_region is not null then 'REVISAR DESPACHO GRATUITO NO INCLUIDO'
+        WHEN tdr.fk_registro_direccion is not null and cd.fk_region=12 and cd.fk_region is not null and cd.fk_comuna in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'REVISAR DESPACHO GRATUITO NO INCLUIDO'
+        WHEN tdr.fk_registro_direccion is not null and cd.fk_region=12 and cd.fk_region is not null and cd.fk_comuna not in(49,50,51,53,57,59,61,62,64,65,66,69,71,72,76,82,88,91) then 'DESPACHO GRATIS INCLUIDO'
+        ELSE 'SIN ESPECIFICAR' END
+        FROM public.tracking_despacho_retiro tdr 
+        left join public.clientes_direcciones cd on cd.id=tdr.fk_registro_direccion
+        where tdr.fk_tracking=public.sla_00_completo.tracking_id::integer and tdr.estado=true order by tdr.id desc limit 1	
+    ) where tipo_de_entrega is null;`;
+
+    let sql8=`UPDATE public.sla_00_completo
+    set direccion_entrega=(
+        SELECT CASE 
+        WHEN tdr.fk_bodega is not null then 'Camino a noviciado 1945, Bodega 19.'
+        WHEN tdr.empresa_ext_retiro is not null then CONCAT(coalesce(tdr.calle_empresa_ext,''),' ',coalesce(tdr.numeracion_empresa_ext,''))
+        WHEN tdr.empresa_ext_despacho is not null then CONCAT(coalesce(tdr.calle_empresa_ext,''),' ',coalesce(tdr.numeracion_empresa_ext,''))
+        WHEN tdr.fk_registro_direccion is not null then CONCAT(coalesce(cd.direccion,''),' ',coalesce(cd.numero,''))
+        WHEN tdr.fk_registro_direccion is null and tdr.fk_bodega is null and tdr.empresa_ext_retiro is null and tdr.empresa_ext_despacho is null then 'SIN ESPECIFICAR'
+        ELSE 'SIN ESPECIFICAR' END
+        FROM public.tracking_despacho_retiro tdr 
+        left join public.clientes_direcciones cd on cd.id=tdr.fk_registro_direccion
+        where tdr.fk_tracking=public.sla_00_completo.tracking_id::integer and tdr.estado=true order by tdr.id desc limit 1
+    ) where direccion_entrega is null;`;
+
+    let sql9=`UPDATE public.sla_00_completo
+    set comuna=(
+        SELECT CASE 
+        WHEN tdr.fk_bodega is not null then 'PUDAHUEL'
+        WHEN tdr.empresa_ext_retiro is not null then CONCAT(coalesce(c2.nombre,''))
+        WHEN tdr.empresa_ext_despacho is not null then CONCAT(coalesce(c2.nombre,''))
+        WHEN tdr.fk_registro_direccion is not null then CONCAT(coalesce(c1.nombre,''))
+        WHEN tdr.fk_registro_direccion is null and tdr.fk_bodega is null and tdr.empresa_ext_retiro is null and tdr.empresa_ext_despacho is null then 'SIN ESPECIFICAR'
+        ELSE 'SIN ESPECIFICAR' END
+        FROM public.tracking_despacho_retiro tdr 
+        left join public.clientes_direcciones cd on cd.id=tdr.fk_registro_direccion
+        left join public.comunas c1 on c1.id=cd.fk_comuna
+        left join public.comunas c2 on c2.id=tdr.fk_comuna_empresa_ext
+        where tdr.fk_tracking=public.sla_00_completo.tracking_id::integer and tdr.estado=true order by tdr.id desc limit 1
+    ) where comuna is null;`;
+
+    let sql10=`UPDATE public.sla_00_completo
+    set fecha_publicacion_aforo=(
+        SELECT to_char( cp.fecha_prog_aforo, 'DD/MM/YYYY') FROM public.contenedor_proforma cp 
+        INNER JOIN public.tracking t on t.fk_proforma=cp.id
+        where t.id=public.sla_00_completo.tracking_id::integer
+    ) where fecha_publicacion_aforo is null;`;
+
+    let sql11=`UPDATE public.sla_00_completo
+    set fecha_retiro_puerto=(
+        SELECT to_char( cp.fecha_retiro_puerto, 'DD/MM/YYYY') FROM public.contenedor_proforma cp 
+        INNER JOIN public.tracking t on t.fk_proforma=cp.id
+        where t.id=public.sla_00_completo.tracking_id::integer
+    ) where fecha_retiro_puerto is null`;
+
+    await client.query(sql1);
+    await client.query(sql2);
+    await client.query(sql3);
+    await client.query(sql4);
+    await client.query(sql5);
+    await client.query(sql6);
+    await client.query(sql7);
+    await client.query(sql8);
+    await client.query(sql9);
+    await client.query(sql10);
+    await client.query(sql11);
+    }catch(error){
+        console.log('SCRIPT ACTUALIZACION SLA 00 COMPLETO: '+error);
+    }
+}
+
 exports.ProcesarExcelGatillosCronJob = async (req, res) => {
     console.log(".::.");
     console.log(".::.");
@@ -1317,8 +1428,8 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
         console.log(moment().format("DD-MM-YYYY HH:mm")+'\n\n');
     var shc_ProcesarExcelGatillos = require('node-schedule');
     const rule = new shc_ProcesarExcelGatillos.RecurrenceRule();
-    rule.hour = 8;
-    rule.minute = 14;
+    rule.hour = 10;
+    rule.minute = 4;
 
     shc_ProcesarExcelGatillos.scheduleJob(rule, () => {
         function_ProcesarExcelGatillos_CronJob();
@@ -1371,6 +1482,8 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 			}
 			console.log('terminado paso 1');
 		}
+
+        await updateDataSla00();
         var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
         await client.query(`update public.excel_despachos set mensaje_carga ='01.- ARCHIVO CARGADO',fecha_carga='`+fecha_carga+`', link_archivo=''`);
 

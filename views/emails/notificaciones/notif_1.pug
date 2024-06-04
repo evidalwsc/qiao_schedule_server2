@@ -109,10 +109,30 @@ html(lang="en")
                     p(class='texto') #{txt}
 
 
-        if(tracking_id!=null)
-            div(class='container')
-                p(class='texto') Recuerda que puedes ver el estado de tu servicio de manera rápida y fácil usando tu “tracking ID”. Ingresa a wscargo.cl, copia y pega este código y podrás acceder en acceder en cualquier momento:
-                a(href=`${host}/track/${tracking_id}`) #{tracking_id}
+        if(timeline && timeline.length>0)
+            p A continuación, te mostramos un registro con todos los principales hitos de tu servicio #{fk_consolidado}. Que podrás visualizar cuando tu quieras en nuestro portal "Experiencia digital" accediendo a 
+                a(href=`https://clientes.wscargo.cl`) clientes.wscargo.cl</strong>
+
+                table(style="border: none; font-family: Arial, Helvetica, sans-serif; font-size: 12px;")
+                    thead(style="border: none;")
+                        tr
+                            td(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") 
+                            th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Hito
+                            th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Fecha
+                            th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Realizado
+                    tbody(style="border: none;")
+                        each hito in timeline
+                            tr
+                                //- Colocar class en td para cambiar color de fondo
+                                td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') 
+                                    if hito.estado == 1
+                                        img(src="https://isalock.cl/assets/check1-removebg-preview.png", alt="check", style="width: 20px; height: 20px;")
+                                    else
+                                        img(src="https://isalock.cl/assets/check2-removebg-preview.png", alt="check", style="width: 20px; height: 20px; filter: grayscale(100%);")
+                                td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{hito.texto}
+                                td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{hito.fechaEstimada}
+                                td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{(hito.estado == 1) ? 'Sí' : 'No'}
+
 
         div(class='container')
             p(class='texto-comercial') Muchas gracias
