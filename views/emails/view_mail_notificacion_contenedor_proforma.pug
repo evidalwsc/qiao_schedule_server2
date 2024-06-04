@@ -19,6 +19,32 @@ html(lang="en")
             div(class='border')
                 div !{newTexto}
 
+        if(timeline && timeline.length>0)
+            div(class='container')
+                p A continuación, te mostramos un registro con todos los principales hitos de tu servicio #{fk_consolidado}. Que podrás visualizar cuando tu quieras en nuestro portal "Experiencia digital" accediendo a 
+                    a(href=`https://clientes.wscargo.cl`) clientes.wscargo.cl</strong>
+
+                table(style="border: none; font-family: Arial, Helvetica, sans-serif; font-size: 12px;")
+                    tr
+                        td(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") 
+                        th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Hito
+                        th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Fecha
+                        th(style="align-content: left; text-align: left; background-color: #D6D6D6; padding: 10px;") Realizado
+
+                    each hito in timeline
+                        tr
+                            //- Colocar class en td para cambiar color de fondo
+                            td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') 
+
+                                if hito.estado == 1
+                                    img(src="https://isalock.cl/assets/check1-removebg-preview.png", alt="check", style="width: 20px; height: 20px;")
+                                else
+                                    img(src="https://isalock.cl/assets/check2-removebg-preview.png", alt="check", style="width: 20px; height: 20px; filter: grayscale(100%);")
+                            
+                            td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{hito.texto}
+                            td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{hito.fechaEstimada}
+                            td(style="border: none; padding: 10px;")(class=(hito.estado == 1) ? 'bg-success' : 'bg-off') #{(hito.estado == 1) ? 'Sí' : 'No'}
+
         div(class='container')
 
             p(class='texto-comercial') Muchas gracias

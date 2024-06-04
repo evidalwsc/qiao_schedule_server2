@@ -477,6 +477,9 @@ exports.mail_notificacion_contenedor_proforma = async(opciones) => {
             if(comercial.rows && comercial.rows.length>0){
             opciones.comercial=comercial.rows[0];
             }
+
+            let timeLineData=await get_data_time_linea(opciones.servicios[i].fk_servicio);
+            opciones.timeline=timeLineData;
             const html = view_mail_notificacion_contenedor_proforma(opciones);
             const text = htmltoText.fromString(html);
             let asunto=await reemplazar_metadatos_asunto(opciones.asunto,opciones.servicios[i]);
@@ -1062,4 +1065,100 @@ exports.mail_notificacion_new_consolidado = async(opciones) => {
     });
     
     return estado;
+}
+
+const get_data_time_linea =async(fk_servicio)=>{
+    let sql=`SELECT DISTINCT sh.texto, MAX(sh.fecha) AS fecha, lt.position
+    FROM public.servicio_historial sh
+    INNER JOIN public.linea_tiempo lt ON TRIM(UPPER(sh.texto)) = TRIM(UPPER(lt.history))
+    WHERE sh.fk_servicio = `+fk_servicio+` AND sh.estado = true AND lt.activo = true
+    GROUP BY sh.texto, lt.position
+    ORDER BY lt.position ASC`;
+    let result=await client.query(sql);
+    if (!result || !result.rows) {
+        throw new Error('Problemas al intentar obtener el historial de Servicio');
+    }
+
+    let sqlTimeLine=`SELECT * FROM public.linea_tiempo WHERE activo=true ORDER BY position ASC`;
+    let resultTimeLine=await client.query(sqlTimeLine);
+
+    let sqlFechasEstimadas=`SELECT * FROM public."fechasEstimadas" order by id asc`;
+    let resultFechasEstimadas=await client.query(sqlFechasEstimadas);
+
+    let aux = [];
+    let fechaEstimada = {};
+    let estimacion = 0;
+    let fecha = '';
+    let yaLlegoAunoSin = false;
+
+    for (let i = 0; i < resultTimeLine.rows.length; i++) {
+        // Si no es el ultimo item
+        if (i < resultTimeLine.rows.length - 1) {
+            let item = resultTimeLine.rows[i];
+
+            let existe = result.rows.findIndex(x => x.texto.toUpperCase().trim() === item.history.toUpperCase().trim());
+            let existeHistory = result.rows.find(x => x.texto.toUpperCase().trim() === item.history.toUpperCase().trim());
+            if (existe >= 0) {
+                let existeFechasEstimadas = resultFechasEstimadas.rows.length > 0 ? resultFechasEstimadas.rows.find((f) => f.title === item.history) : 'undefined';
+
+                if (existeFechasEstimadas !== 'undefined' && existeFechasEstimadas !== undefined) {
+                fechaEstimada = existeFechasEstimadas;
+                estimacion = parseInt(fechaEstimada.dias);
+                fecha = moment(existeHistory.fecha).add(estimacion, 'days');
+                }
+
+                aux.push({
+                id: item.id,
+                texto: item.texto,
+                estado: '1',
+                fechaEstimada: moment(existeHistory.fecha).format('DD/MM/YY'),
+                });
+
+            } else {
+                // Obtener la fecha estimada, si fecha y fechaEstimada estan definidas
+                let fecha_proxima = '';
+                if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
+                    fecha_proxima = `Fecha estimada entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')}`;
+                }
+                yaLlegoAunoSin = true;
+
+                aux.push({
+                    id: item.id,
+                    texto: item.texto,
+                    estado: '-1',
+                    fechaEstimada: fecha_proxima
+                });
+            }
+        } else {
+            let item = resultTimeLine.rows[i];
+
+            let existe = result.rows.findIndex(x => x.texto.toUpperCase().trim() === item.history.toUpperCase().trim());
+            
+            if (existe >= 0) {
+                let existeHistory = result.rows.find(x => x.texto.toUpperCase().trim() === item.history.toUpperCase().trim());
+                
+                aux.push({
+                    id: item.id,
+                    texto: item.texto,
+                    estado: '1',
+                    fechaEstimada: moment(existeHistory.fecha).format('DD/MM/YY')
+                })
+            } else {
+
+                let fecha_proxima = '';
+                if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
+                    fecha_proxima = `Fecha estimada entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')} `;
+                }
+                
+                aux.push({
+                id: item.id,
+                texto: item.texto,
+                estado: '-1',
+                fechaEstimada: fecha_proxima
+                });
+            }
+        }
+    }
+
+    return aux;
 }
