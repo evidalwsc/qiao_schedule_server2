@@ -195,7 +195,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         fecha:Correo.rows[0]['fecha'],
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -211,7 +212,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
                         datosAdicionales:JSON.parse(Correo.rows[0]['datos_adicionales']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -228,7 +230,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         tipo:Correo.rows[0]['tipo_id'],
                         host:Correo.rows[0]['enlace'],
                         datosAdicionales:JSON.parse(Correo.rows[0]['datos_adicionales']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -243,7 +246,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         host:Correo.rows[0]['enlace'],
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -258,7 +262,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         fecha:Correo.rows[0]['fecha'],
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -274,7 +279,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         fecha:Correo.rows[0]['fecha'],
                         email:Correo.rows[0]['para'],
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -290,7 +296,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
                         tipo:Correo.rows[0]['tipo_id'],
                         host:Correo.rows[0]['enlace'],
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
@@ -305,7 +312,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                         comercial:JSON.parse(Correo.rows[0]['comercial']),
                         tipo:Correo.rows[0]['tipo_id'],
                         host:Correo.rows[0]['enlace'],
-                        tracking_id:Correo.rows[0]['tracking_encrypt']
+                        tracking_id:Correo.rows[0]['tracking_encrypt'],
+                        timeline:Correo.rows[0]['timeline']
                     });
                     ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
                 }
