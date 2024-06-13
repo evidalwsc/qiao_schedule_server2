@@ -781,9 +781,7 @@ exports.mail_notificacion_1 = async(opciones) => {
         to:opciones.email,
         bcc:'wscargo@wscargo.cl;'+casillabcc,
         fecha:opciones.fecha,
-        subject: opciones.asunto,
-        text,
-        html,
+        subject: opciones.asunto
         /*attachments: [
         {
             filename: 'file-name.pdf', // <= Here: made sure file name match
@@ -890,6 +888,7 @@ exports.mail_notificacion_1 = async(opciones) => {
      const text = htmltoText.fromString(html);
      opcionesEmailWsc.text=text;
      opcionesEmailWsc.html=html;
+     
 
     var estado = await transport_TNM.sendMail(opcionesEmailWsc).then(function(info){
         console.log("info",info);
