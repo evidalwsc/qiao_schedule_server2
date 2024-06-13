@@ -329,6 +329,7 @@ exports.mail_envios_server2 = async (req, resp) => {
                                 comercial:JSON.parse(Correo.rows[0]['comercial']),
                                 tracking_id:Correo.rows[0]['tracking_encrypt'],
                                 host:Correo.rows[0]['enlace'],
+                                timeline:Correo.rows[0]['timeline']
                             });
                             
                         }
