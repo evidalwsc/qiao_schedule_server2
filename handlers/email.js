@@ -771,7 +771,8 @@ const view_mail_notificacion_1 = (opciones) => {
 }
 
 exports.mail_notificacion_1 = async(opciones) => {
-   
+console.log('aqui');
+   console.log('opciones',opciones);
     let remitente='wscargo@wscargo.cl';
    /* if(opciones && opciones.comercial && opciones.comercial!=null && opciones.comercial.email && opciones.comercial.email!=null){
         remitente=opciones.comercial.email;
