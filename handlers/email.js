@@ -12,21 +12,151 @@ const { POINT_CONVERSION_HYBRID } = require('constants');
 const console = require('console');
 const moment = require('moment');
 var funcionesCompartidasCtrl = require('../server/controllers/funcionesCompartidasCtrl.js');
-/*
-
-let transport_TNM = nodemailer.createTransport({
-    host: 'smtp.mailtrap.io',
-    port: '25',
-    auth: { user: '24846bcaa0c0bb', pass: 'db13cc9b4ab980'},
-    secureConnection: false,
-    tls: { ciphers: 'SSLv3' }   
-});*/
-
 
 let transport_TNM = nodemailer.createTransport(emailConfig.transport_TNM);
 
 let casillabcc='notificaciones@wscargo.cl';
 
+/**********************************************/
+/**********************************************/
+/**********************************************/
+const view_mail_reporte_clientes = (opciones) => {
+    const html = pug.renderFile('./views/emails/view_mail_reporte_clientes.pug', opciones);
+    return juice(html);
+}
+exports.mail_reporte_clientes = async(opciones) => {
+    const html = view_mail_reporte_clientes(opciones);
+    const text = htmltoText.fromString(html);
+    
+    let opcionesEmail = {
+        from: 'wscargo@wscargo.cl',
+        to: opciones.email,
+        subject: opciones.asunto,
+        text,
+        html,
+        attachments: [
+        {
+            filename: 'Reporte_Clientes.xls', // <= Here: made sure file name match
+            path: path.join(__dirname, '../public/files/Reporte_Clientes.xlsx'), // <= Here
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+    ]
+    };
+
+    var estado = await transport_TNM.sendMail(opcionesEmail).then(function(info){
+        console.log(" ENVIO CORREO REPORTE CLIENTES OK ");
+        return true;
+    }).catch(function(err){
+        console.log(" ENVIO CORREO REPORTE CLIENTE ERROR "+err);
+        return false;
+    });
+    return estado;
+}
+/**********************************************/
+/**********************************************/
+/**********************************************/
+const view_mail_reporte_gatillos = (opciones) => {
+    const html = pug.renderFile('./views/emails/view_mail_reporte_gatillos.pug', opciones);
+    return juice(html);
+}
+exports.mail_reporte_gatillos = async(opciones) => {
+    const html = view_mail_reporte_gatillos(opciones);
+    const text = htmltoText.fromString(html);
+    
+    let opcionesEmail = {
+        from: 'wscargo@wscargo.cl',
+        to: opciones.email,
+        subject: opciones.asunto,
+        text,
+        html,
+        attachments: [
+        {
+            filename: 'reporte_gatillos.xls', // <= Here: made sure file name match
+            path: path.join(__dirname, '../public/files/exceldespachos/reporte_gatillos.xls'), // <= Here
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+    ]
+    };
+
+    var estado = await transport_TNM.sendMail(opcionesEmail).then(function(info){
+        console.log(" ENVIO CORREO NOTAS DE COBRO OK ");
+        return true;
+    }).catch(function(err){
+        console.log(" ENVIO CORREO NOTAS DE COBRO ERROR "+err);
+        return false;
+    });
+    return estado;
+}
+/**********************************************/
+/**********************************************/
+/**********************************************/
+const view_mail_reporte_notasdecobro = (opciones) => {
+    const html = pug.renderFile('./views/emails/view_mail_reporte_notasdecobro.pug', opciones);
+    return juice(html);
+}
+exports.mail_reporte_notasdecobro = async(opciones) => {
+    const html = view_mail_reporte_notasdecobro(opciones);
+    const text = htmltoText.fromString(html);
+    
+    let opcionesEmail = {
+        from: 'wscargo@wscargo.cl',
+        to: opciones.email,
+        subject: opciones.asunto,
+        text,
+        html,
+        attachments: [
+        {
+            filename: 'Reporte_Notas_De_cobro.xlsx', // <= Here: made sure file name match
+            path: path.join(__dirname, '../public/files/Reporte_Notas_De_Cobros.xlsx'), // <= Here
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+    ]
+    };
+
+    var estado = await transport_TNM.sendMail(opcionesEmail).then(function(info){
+        console.log(" ENVIO CORREO NOTAS DE COBRO OK ");
+        return true;
+    }).catch(function(err){
+        console.log(" ENVIO CORREO NOTAS DE COBRO ERROR "+err);
+        return false;
+    });
+    return estado;
+}
+/**********************************************/
+/**********************************************/
+/**********************************************/
+const view_mail_reporte_masterbd = (opciones) => {
+    const html = pug.renderFile('./views/emails/view_mail_reporte_masterbd.pug', opciones);
+    return juice(html);
+}
+exports.mail_reporte_masterbd = async(opciones) => {
+    const html = view_mail_reporte_masterbd(opciones);
+    const text = htmltoText.fromString(html);
+    
+    let opcionesEmail = {
+        from: 'wscargo@wscargo.cl',
+        to: opciones.email,
+        subject: opciones.asunto,
+        text,
+        html,
+        attachments: [
+        {
+            filename: 'Reporte_Master_BD.xlsx', // <= Here: made sure file name match
+            path: path.join(__dirname, '../public/files/Reporte_Master_BD.xlsx'), // <= Here
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        }
+    ]
+    };
+
+    var estado = await transport_TNM.sendMail(opcionesEmail).then(function(info){
+        console.log(" ENVIO CORREO MASTER BD OK ");
+        return true;
+    }).catch(function(err){
+        console.log(" ENVIO CORREO MASTER BD ERROR "+err);
+        return false;
+    });
+    return estado;
+}
 /**********************************************/
 /**********************************************/
 /**********************************************/
@@ -1211,7 +1341,8 @@ const get_data_time_linea =async(fk_servicio)=>{
                         ser.estado!=999
                         and replace(ser.numero_contenedor, '-', '') = '`+result3.rows[0].fk_contenedor_nombre+`' and nave.nave_nombre='`+result3.rows[0].nave_nombre+`'`;
 
-                        let rTnm=await clientTnm.query(sqlTnm);
+                        //let rTnm=await clientTnm.query(sqlTnm);
+                        let rTnm=false;
                 
                         if(rTnm && rTnm.rows && rTnm.rowCount>0){
                             result.rows.push({texto:'Contenedor retirado de puerto',fecha:moment(rTnm.rows[0].etapa_1_fecha,'DD-MM-YYYY').format('YYYY-MM-DDT00:00:00'),fk_servicio:fk_servicio}); 
