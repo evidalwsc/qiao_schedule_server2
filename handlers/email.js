@@ -414,7 +414,7 @@ exports.mail_notificacion_pago = async(opciones) => {
     let opcionesEmailWsc = {
         from: email1,
         to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';eduardo.vidal@wscargo.cl;pagos@wscargo.cl',
+        bcc: opciones.email+';pagos@wscargo.cl',
         cliente: opciones.cliente,
         replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
@@ -757,7 +757,7 @@ exports.mail_nota_de_cobro_din = async(opciones) => {
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
         to: opciones.destinatario,
-        cc: opciones.copia_destinatario+';eduardo.vidal@wscargo.cl',
+        cc: opciones.copia_destinatario,
         bcc:casillabcc,
         replyTo: opciones.copia_destinatario,
         subject: opciones.asunto,
