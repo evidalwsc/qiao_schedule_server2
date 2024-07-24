@@ -36,7 +36,7 @@ exports.mail_reporte_clientes = async(opciones) => {
         html,
         attachments: [
         {
-            filename: 'Reporte_Clientes.xls', // <= Here: made sure file name match
+            filename: 'Reporte Clientes.xls', // <= Here: made sure file name match
             path: path.join(__dirname, '../public/files/Reporte_Clientes.xlsx'), // <= Here
             contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
@@ -71,7 +71,7 @@ exports.mail_reporte_gatillos = async(opciones) => {
         html,
         attachments: [
         {
-            filename: 'reporte_gatillos.xls', // <= Here: made sure file name match
+            filename: 'reporte_gatillos_new.xls', // <= Here: made sure file name match
             path: path.join(__dirname, '../public/files/exceldespachos/reporte_gatillos.xls'), // <= Here
             contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
@@ -106,7 +106,7 @@ exports.mail_reporte_notasdecobro = async(opciones) => {
         html,
         attachments: [
         {
-            filename: 'Reporte_Notas_De_cobro.xlsx', // <= Here: made sure file name match
+            filename: 'Reporte Notas Cobros.xlsx', // <= Here: made sure file name match
             path: path.join(__dirname, '../public/files/Reporte_Notas_De_Cobros.xlsx'), // <= Here
             contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         }
