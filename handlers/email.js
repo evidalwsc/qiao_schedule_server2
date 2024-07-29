@@ -1377,7 +1377,7 @@ const get_data_time_linea =async(fk_servicio)=>{
             } else {
                 // Obtener la fecha estimada, si fecha y fechaEstimada estan definidas
                 let fecha_proxima = '';
-                if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
+                if (fecha !== '' && fechaEstimada !== '' && !yaLlegoAunoSin) {
                     fecha_proxima = `Estimado entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')}`;
                 }
                 yaLlegoAunoSin = true;
@@ -1407,7 +1407,7 @@ const get_data_time_linea =async(fk_servicio)=>{
                 })
             } else {
                 let fecha_proxima = '';
-                if (fecha !== '' && fechaEstimada !== {} && !yaLlegoAunoSin) {
+                if (fecha !== '' && fechaEstimada !== '' && !yaLlegoAunoSin) {
                     fecha_proxima = `Estimado entre ${moment(fecha).subtract(fechaEstimada.rango_inferior, 'days').format('DD/MM/YY')} - ${moment(fecha).add(fechaEstimada.rango_superior, 'days').format('DD/MM/YY')} `;
                 }
                 
