@@ -27,13 +27,13 @@ const encryptText = async (texto) => {
 }
 
 exports.mail_envios_server2 = async (req, resp) => {
-    console.log(".::.");
-    console.log(".::.");
-    console.log("CONSULTANDO CORREOS 2 ");
+    console.log("\n.::.");
+    console.log("\n.::.");
+    console.log("\nCONSULTANDO CORREOS 2 ");
     var sche_mail_envios_server2 = require('node-schedule');
 
     sche_mail_envios_server2.scheduleJob('*/15 * * * * *', () => {
-        console.log("ENTRO EN EL CRON JOB ");
+        console.log("\nENTRO EN EL CRON JOB ");
         mail_envios_server2();
 
     });
@@ -81,12 +81,12 @@ exports.mail_envios_server2 = async (req, resp) => {
         
         if(Correo.rows.length>0)
         {
-            console.log("tipo "+Correo.rows[0]['tipo']);
-            console.log("tipo_id "+Correo.rows[0]['tipo_id']);
-            console.log(".::.");
-            console.log(".::.");
-            console.log("\n\n\nENVIANDO ID "+Correo.rows[0]['id']);
-            console.log("\n\n\nENVIANDO TIPO "+Correo.rows[0]['tipo_id']);
+            console.log("\ntipo "+Correo.rows[0]['tipo']);
+            console.log("\ntipo_id "+Correo.rows[0]['tipo_id']);
+            console.log("\n.::.");
+            console.log("\n.::.");
+            console.log("\n\n\n\nENVIANDO ID "+Correo.rows[0]['id']);
+            console.log("\n\n\n\nENVIANDO TIPO "+Correo.rows[0]['tipo_id']);
             
             if( Correo.rows[0]['tipo']=='mail_nuevo_usuario' )
             {
@@ -337,7 +337,7 @@ exports.mail_envios_server2 = async (req, resp) => {
                 {
                     if( Correo.rows[0]['tipo_id']=='999' || Correo.rows[0]['tipo_id']=='1000' || Correo.rows[0]['tipo_id']==999 || Correo.rows[0]['tipo_id']==1000)
                     {
-                        console.log('PASO 2');
+                        console.log('\nPASO 2');
                     }
                     else
                     {
@@ -479,7 +479,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             }*/
             else if( Correo.rows[0]['tipo']=='mail_notificacion_confirmacion_consolidacion_rapida' )
             {
-                console.log('\n\n PROCESANDO mail_notificacion_confirmacion_consolidacion_rapida')
+                console.log('\n\n\n PROCESANDO mail_notificacion_confirmacion_consolidacion_rapida')
                 var Intentos= Number(Correo.rows[0]['intentos'])+1;
                 await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_confirmacion_consolidacion_rapida({
@@ -517,8 +517,8 @@ exports.mail_envios_server2 = async (req, resp) => {
 }
 
 exports.ProcesarExcelGatillos = async (req, res) => {
-    console.log(".::.");
-    console.log(".::.");
+    console.log("\n.::.");
+    console.log("\n.::.");
     const moment = require('moment');
         console.log(moment().format("DD-MM-YYYY HH:mm")+'\n\n');
     var shc_ProcesarExcelGatillos = require('node-schedule');
@@ -538,10 +538,10 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 
             await client.query(` DELETE FROM public.sla_00_completo where estado_despacho!='ENTREGADO' `);
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Insertando el reporte ');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nInsertando el reporte ');
             await client.query(`
             INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos) 
             select
@@ -775,10 +775,10 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 
             await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- CAPTURADO DATOS PARA ARCHIVO DE REPORTE') `);
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Capturando el porte');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nCapturando el porte');
             var Reporte = await client.query(`
             SELECT DISTINCT t.id as tracking_id,
     coalesce(s.id_proveedor,'') as id_proveedor
@@ -1308,17 +1308,17 @@ exports.ProcesarExcelGatillos = async (req, res) => {
 
             } catch (error) {
                 await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- ERROR `+error+`') `);
-                console.log("ERROR "+error);
+                console.log("\nERROR "+error);
                 res.status(400).send({
                     message: "ERROR AL CREAR EXCEL",
                     success:false,
                 }); res.end(); res.connection.destroy();
             }
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Guardando excel ');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nGuardando excel ');
 
 
             await client.query(` 
@@ -1332,7 +1332,7 @@ exports.ProcesarExcelGatillos = async (req, res) => {
                 if (err) 
                 {
                     await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n04.- ERROR `+err+`') `);
-                    console.log("ERROR "+err);
+                    console.log("\nERROR "+err);
                 } else {
                 }
             });
@@ -1434,41 +1434,41 @@ async function updateDataSla00(){
         where t.id=public.sla_00_completo.tracking_id::integer
     ) where fecha_retiro_puerto is null`;
 
-    console.log(' antes de sql1 ');
+    console.log('\n antes de sql1 ');
     await client.query(sql1);
-    console.log(' despues de sql1 ');
-    console.log(' antes de sql2 ');
+    console.log('\n despues de sql1 ');
+    console.log('\n antes de sql2 ');
     await client.query(sql2);
-    console.log(' despues de sql2 ');
-    console.log(' antes de sql3 ');
+    console.log('\n despues de sql2 ');
+    console.log('\n antes de sql3 ');
     await client.query(sql3);
-    console.log(' despues de sql3 ');
-    console.log(' antes de sql4 ');
+    console.log('\n despues de sql3 ');
+    console.log('\n antes de sql4 ');
     await client.query(sql4);
-    console.log(' despues de sql4 ');
-    console.log(' antes de sql5 ');
+    console.log('\n despues de sql4 ');
+    console.log('\n antes de sql5 ');
     await client.query(sql5);
-    console.log(' despues de sql5 ');
-    console.log(' antes de sql6 ');
+    console.log('\n despues de sql5 ');
+    console.log('\n antes de sql6 ');
     await client.query(sql6);
-    console.log(' despues de sql6 ');
-    console.log(' antes de sql7 ');
+    console.log('\n despues de sql6 ');
+    console.log('\n antes de sql7 ');
     await client.query(sql7);
-    console.log(' despues de sql7 ');
-    console.log(' antes de sql8 ');
+    console.log('\n despues de sql7 ');
+    console.log('\n antes de sql8 ');
     await client.query(sql8);
-    console.log(' despues de sql8 ');
-    console.log(' antes de sql9 ');
+    console.log('\n despues de sql8 ');
+    console.log('\n antes de sql9 ');
     await client.query(sql9);
-    console.log(' despues de sql9 ');
-    console.log(' antes de sql10 ');
+    console.log('\n despues de sql9 ');
+    console.log('\n antes de sql10 ');
     await client.query(sql10);
-    console.log(' despues de sql10 ');
-    console.log(' antes de sql11 ');
+    console.log('\n despues de sql10 ');
+    console.log('\n antes de sql11 ');
     await client.query(sql11);
-    console.log(' despues de sql11 ');
+    console.log('\n despues de sql11 ');
     }catch(error){
-        console.log('SCRIPT ACTUALIZACION SLA 00 COMPLETO: '+error);
+        console.log('\nSCRIPT ACTUALIZACION SLA 00 COMPLETO: '+error);
     }
 }
 
@@ -1498,7 +1498,7 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
                         }
                     }
                 /*}else if(r.rows.length>5){
-                    console.log('mas de 5:'+result.rows[i].id);
+                    console.log('\nmas de 5:'+result.rows[i].id);
                     for(x=0;x<4;x++){
                         if(x==0){
                             await client.query(`UPDATE public.tracking SET fecha_recepcion_1='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
@@ -1514,10 +1514,10 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
                 }*/
             }
             if(i==result.rows.length-1){
-                console.log('ultimo');
+                console.log('\nultimo');
             }
         }
-        console.log('terminado paso 1');
+        console.log('\nterminado paso 1');
     }
     var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
     await client.query(`update public.excel_despachos set mensaje_carga ='01.- ARCHIVO CARGADO',fecha_carga='`+fecha_carga+`', link_archivo=''`);
@@ -1532,10 +1532,10 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
 
         await client.query(` DELETE FROM public.sla_00_completo where estado_despacho!='ENTREGADO' `);
 
-        console.log('.::.');
-        console.log('.::.');
-        console.log('.::.');
-        console.log('Insertando el reporte ');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\nInsertando el reporte ');
         await client.query(`
         INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos) 
         select
@@ -1769,10 +1769,10 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
 
         await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- CAPTURADO DATOS PARA ARCHIVO DE REPORTE') `);
 
-        console.log('.::.');
-        console.log('.::.');
-        console.log('.::.');
-        console.log('Capturando el porte');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\nCapturando el porte');
         var Reporte = await client.query(`
         SELECT DISTINCT t.id as tracking_id,
 coalesce(s.id_proveedor,'') as id_proveedor
@@ -2299,10 +2299,10 @@ LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id and nc.estado=true order
                 console.log(64);
             }
 
-        console.log('.::.');
-        console.log('.::.');
-        console.log('.::.');
-        console.log('Guardando excel ');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\n.::.');
+        console.log('\nGuardando excel ');
 
 
         await client.query(` 
@@ -2316,7 +2316,7 @@ LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id and nc.estado=true order
             if (err) 
             {
                 await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n04.- ERROR `+err+`') `);
-                console.log("ERROR "+err);
+                console.log("\nERROR "+err);
             } else {
             }
         });
@@ -2328,7 +2328,7 @@ LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id and nc.estado=true order
     }); res.end(); res.connection.destroy();
 
 } catch (error) {
-    console.log("ERROR AL GENERAR REPORTE GATILLO BY API"+error);
+    console.log("\nERROR AL GENERAR REPORTE GATILLO BY API"+error);
     await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- ERROR `+error+`') `);
     res.status(400).send({
         message: "ERROR AL GENERAR REPORTE",
@@ -2337,10 +2337,10 @@ LEFT JOIN public.notas_cobros nc on nc.fk_despacho=d.id and nc.estado=true order
 }};
 
 exports.ProcesarExcelGatillosCronJob = async (req, res) => {
-    console.log(".::.");
-    console.log(".::.");
+    console.log("\n.::. ProcesarExcelGatillosCronJob");
+    console.log("\n.::. ProcesarExcelGatillosCronJob");
     var shc_ProcesarExcelGatillos = require('node-schedule');
-    shc_ProcesarExcelGatillos.scheduleJob('0 7 * * *', () => {
+    shc_ProcesarExcelGatillos.scheduleJob('10 9 * * *', () => {
         function_ProcesarExcelGatillos_CronJob();
     });
 
@@ -2370,7 +2370,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 							}
 						}
 					/*}else if(r.rows.length>5){
-						console.log('mas de 5:'+result.rows[i].id);
+						console.log('\nmas de 5:'+result.rows[i].id);
 						for(x=0;x<4;x++){
 							if(x==0){
 								await client.query(`UPDATE public.tracking SET fecha_recepcion_1='`+r.rows[x].fecha_format+`' where id=`+result.rows[i].id);
@@ -2386,10 +2386,10 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 					}*/
 				}
 				if(i==result.rows.length-1){
-					console.log('ultimo');
+					console.log('\nultimo');
 				}
 			}
-			console.log('terminado paso 1');
+			console.log('\nterminado paso 1');
 		}
 
         await updateDataSla00();
@@ -2406,12 +2406,12 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 
             await client.query(` DELETE FROM public.sla_00_completo where estado_despacho!='ENTREGADO' `);
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Insertando el reporte ');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nInsertando el reporte ');
             await client.query(`
-            INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos) 
+            INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos, consolidado_rapido) 
             select
 
             coalesce(prov.id::text, ''::text) AS id_proveedor
@@ -2581,6 +2581,11 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
             REPLACE(coalesce(tck.volumen_recepcionado::text,''), '.', ',')
             end as m3_recibidos
 
+            , case 
+            when tck.consolidado_rapido is false then 'NO' 
+            when tck.consolidado_rapido is true then 'SI' 
+            else '' end as es_consolidado_rapido
+
             from
             public.tracking as tck
             inner join public.clientes as cli on cli.id = tck.fk_cliente and cli.valido_reportes='SI'
@@ -2635,6 +2640,10 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
             , exc.eta_despacho
             , exc.estado_despacho
             , exc.dias_libres
+            , case 
+            when tck.consolidado_rapido is false then 'NO' 
+            when tck.consolidado_rapido is true then 'SI' 
+            else '' end
             `);
 
             await client.query(`
@@ -2643,10 +2652,10 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 
             await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- CAPTURADO DATOS PARA ARCHIVO DE REPORTE') `);
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Capturando el porte');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nCapturando el porte');
             var Reporte = await client.query(`
             SELECT DISTINCT t.id as tracking_id,
             coalesce(s.id_proveedor,'') as id_proveedor
@@ -2868,7 +2877,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
             , coalesce(t.fecha_pago_3,'') as fecha_pago_3
             , coalesce(t.fecha_pago_4,'') as fecha_pago_4
             , coalesce(t.fecha_pago_5,'') as fecha_pago_5
-            
+            , coalesce(s.consolidado_rapido,'') as consolidado_rapido
             
             FROM public.sla_00_completo s
             INNER JOIN public.clientes c on c.id=s.id_cliente::integer
@@ -3058,6 +3067,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
                 hoja_1.cell(1,59).string('m3_consolidados_nc').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,60).string('fecha_envio_nc').style(estilo_cabecera).style(celda_derecha);
                 hoja_1.cell(1,61).string('responsable_entrega').style(estilo_cabecera).style(celda_derecha);
+                hoja_1.cell(1,62).string('consolidado_rapido').style(estilo_cabecera).style(celda_derecha);
                 
 
                 
@@ -3172,21 +3182,23 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
                     console.log(63);
                     hoja_1.cell(row,col).string(Reporte.rows[i]['responsable_entrega']==null ? '':''+Reporte.rows[i]['responsable_entrega'].toString()).style(estilo_contenido_texto).style(celda_medio); col++;
                     console.log(64);
+                    hoja_1.cell(row,col).string(Reporte.rows[i]['consolidado_rapido']==null ? '':''+Reporte.rows[i]['consolidado_rapido'].toString()).style(estilo_contenido_texto).style(celda_derecha); col++;
+                    console.log(65);
                 }
 
             } catch (error) {
                 await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n03.- ERROR `+error+`') `);
-                console.log("ERROR "+error);
+                console.log("\nERROR "+error);
                 res.status(400).send({
                     message: "ERROR AL CREAR EXCEL",
                     success:false,
                 }); res.end(); res.connection.destroy();
             }
 
-            console.log('.::.');
-            console.log('.::.');
-            console.log('.::.');
-            console.log('Guardando excel ');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\n.::.');
+            console.log('\nGuardando excel ');
 
 
             await client.query(` 
@@ -3200,14 +3212,14 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
                 if (err) 
                 {
                     await client.query(` update public.excel_despachos set mensaje_carga = concat(mensaje_carga,'\n\n04.- ERROR `+err+`') `);
-                    console.log("ERROR "+err);
+                    console.log("\nERROR "+err);
                 } else {
                 }
             });
 
             /* ENVIANDO REPORTE POR CORREO */
             /* ENVIANDO REPORTE POR CORREO */
-            console.log('\n INICIO ENVIANDO ARCHIVO REPORTE GATILLOS '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n INICIO ENVIANDO ARCHIVO REPORTE GATILLOS '+moment().format("DD-MM-YYYY HH:mm"));
             var Correos = await client.query(`
             SELECT 
             emails
@@ -3219,7 +3231,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
                 asunto:'REPORTE GATILLOS '+moment().format("DD-MM-YYYY HH:mm"),
                 email:Correos.rows[0]['emails'].split(";"),
             });
-            console.log('\n FIN ENVIANDO ARCHIVO REPORTE GATILLOS '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n FIN ENVIANDO ARCHIVO REPORTE GATILLOS '+moment().format("DD-MM-YYYY HH:mm"));
             /* ENVIANDO REPORTE POR CORREO */
             /* ENVIANDO REPORTE POR CORREO */
         }
@@ -3229,10 +3241,9 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 
 exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
 
-    console.log(".::.");
-    console.log(".::.");
+    console.log("\n.::. MASTER BD");
     var shc_CrearEnviar_ReporteMasterBD = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD.scheduleJob('30 7 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD.scheduleJob('30 9 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD();
     });
 
@@ -3241,20 +3252,20 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         const filePath = './public/files/Reporte_Master_BD.xlsx';
-        console.log('ESTE ES EL ARCHIVO '+filePath)
+        console.log('\nESTE ES EL ARCHIVO '+filePath)
         await fs.unlink(filePath, (err) => {
           if (err) {
             console.error('Error al eliminar el archivo:', err);
             return;
           }
-          console.log('Archivo eliminado exitosamente');
+          console.log('\nArchivo eliminado exitosamente');
         });
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
 
         /* SEGUNDO CALCULO DEL REPORTE */
         /* SEGUNDO CALCULO DEL REPORTE */
-        console.log('REPORTE MASTER BD 1');
+        console.log('\nREPORTE MASTER BD 1');
         var MesesCerrados = await client.query(`
         SELECT 
         ing_fk_responsable
@@ -3272,7 +3283,7 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
         var CondicioDelete = '';
         var CondicionSelect = '';
     
-        console.log('\n CANTIDAD DE MESES CERRADOS '+JSON.stringify(MesesCerrados));
+        console.log('\n\n CANTIDAD DE MESES CERRADOS '+JSON.stringify(MesesCerrados));
     
         if(MesesCerrados.rows.length>0)
         {
@@ -3291,14 +3302,14 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
             }
         }
     
-        console.log('\n CONDICION DELETE '+JSON.stringify(CondicioDelete));
+        console.log('\n\n CONDICION DELETE '+JSON.stringify(CondicioDelete));
     
-        console.log('\n CONDICION SELECT '+JSON.stringify(CondicionSelect));
+        console.log('\n\n CONDICION SELECT '+JSON.stringify(CondicionSelect));
     
         console.log(`\nQUERY DELETE\n delete from public.master_bd `+CondicioDelete+` `);
         await client.query(` delete from public.master_bd `+CondicioDelete+` `);
     
-        console.log('\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
     
         await client.query(`
         insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio) 
@@ -3377,7 +3388,7 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
         `+CondicionSelect+`
         `);
     
-        console.log('\n FIN CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
     
         var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
     
@@ -3389,7 +3400,7 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
 
         /* CREO REPORTE EXCEL DEL REPORTE */
         /* CREO REPORTE EXCEL DEL REPORTE */
-        console.log('\n INICIO CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n INICIO CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
         var Reporte = await client.query(` 
         SELECT 
         n_carpeta as "N° CARPETA"
@@ -3446,17 +3457,49 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
         const workbook = new xl.Workbook();
         const worksheet = workbook.addWorksheet('Master_Bd');
         const columns = Object.keys(Reporte.rows[0]);
+
+        const numberFormat = workbook.createStyle({
+            numberFormat: '#,##0.00', // Usa el formato que necesites (por ejemplo, sin decimales: '#,##0')
+          });
+
+
         columns.forEach((column, colIndex) => {
             worksheet.cell(1, colIndex + 1).string(column);
         });
+
         Reporte.rows.forEach((row, rowIndex) => {
             columns.forEach((column, colIndex) => {
                 const value = row[column];
-                if (typeof value === 'number') {
-                worksheet.cell(rowIndex + 2, colIndex + 1).number(value);
-                } else {
-                worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
-                }
+                    console.log('\n PROCESANDO COLUMNA '+colIndex);
+                    if (
+                        colIndex === 7  || colIndex === 8   || colIndex === 9   ||
+                        colIndex === 10 || colIndex === 11  || colIndex === 12  ||
+                        colIndex === 13 || colIndex === 14  || colIndex === 15  ||
+                        colIndex === 19 || colIndex === 20  || colIndex === 21  ||
+                        colIndex === 22 || colIndex === 23  || colIndex === 24  ||
+                        colIndex === 25 || colIndex === 27  || colIndex === 29  ||
+                        colIndex === 31 || colIndex === 32  || colIndex === 33
+                    ) 
+                    {
+                        console.log('\n SI ES COLUMNA NUMERO '+colIndex);
+                        // Asegúrate de convertir correctamente a número
+                        const numberValue = Number(value.toString().trim()); // Usar trim para eliminar espacios
+                        if (!isNaN(numberValue)) 
+                        {
+                            console.log('\n NO ES NUMERO APLICO FORMATO A COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            worksheet.cell(rowIndex + 2, colIndex + 1).number(numberValue).style(numberFormat); // Aplica el estilo
+                        } 
+                        else 
+                        {
+                            console.log('\n si ES NUMERO COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            // En caso de no ser un número, guárdalo como cadena para depuración
+                            worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                        }
+                    } 
+                    else 
+                    {
+                        worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                    }
             });
         });
         workbook.write('./public/files/Reporte_Master_BD.xlsx', (err, stats) => {
@@ -3464,22 +3507,22 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
             {
                 console.error('Error al guardar el archivo Excel:', err);
             } else {
-                console.log('Archivo Excel guardado exitosamente:', filePath);
+                console.log('\nArchivo Excel guardado exitosamente:', filePath);
             }
         });
-        console.log('\n FIN CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
         /* CREO REPORTE EXCEL DEL REPORTE */
         /* CREO REPORTE EXCEL DEL REPORTE */
         
         
         
-        console.log('\n FIN CREACION ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN CREACION ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
         /* CREO REPORTE EXCEL DEL REPORTE */
         /* CREO REPORTE EXCEL DEL REPORTE */        
 
         /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
         /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
-        console.log('\n INICIO ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n INICIO ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
         var Correos = await client.query(`
         SELECT 
         emails
@@ -3492,7 +3535,7 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
             asunto:'REPORTE MASTER BD '+moment().format("DD-MM-YYYY HH:mm"),
             email:Correos.rows[0]['emails'].split(";"),
         });
-        console.log('\n FIN ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
         /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
         /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
     }
@@ -3500,10 +3543,9 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
 
 exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
-    console.log(".::.");
-    console.log(".::.");
+    console.log("\n.::. CrearEnviar_ReporteNotasDeCobro");
     var shc_CrearEnviar_ReporteNotasDeCobro = require('node-schedule');
-    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('50 7 * * *', () => {
+    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('0 10 * * *', () => {
         FUNCT_CrearEnviar_ReporteNotasDeCobro();
     });
 
@@ -3512,13 +3554,13 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         const filePath = './public/files/Reporte_Notas_De_Cobros.xlsx';
-        console.log('ESTE ES EL ARCHIVO '+filePath)
+        console.log('\nESTE ES EL ARCHIVO '+filePath)
         await fs.unlink(filePath, (err) => {
           if (err) {
             console.error('Error al eliminar el archivo:', err);
             return;
           }
-          console.log('Archivo eliminado exitosamente');
+          console.log('\nArchivo eliminado exitosamente');
         });
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
@@ -3526,7 +3568,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
         /* CREO REPORTE EXCEL DEL REPORTE */
         /* CREO REPORTE EXCEL DEL REPORTE */
         try {
-            console.log('\n INICIO CAPTURA REPORTE ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n INICIO CAPTURA REPORTE ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
             var Reporte = await client.query(` 
             SELECT 
             nc.id as "ID_NOTA",
@@ -3630,23 +3672,58 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
                 ON u.id=cli.fk_comercial
             WHERE nc.estado=true
             `);
-            console.log('\n FIN CAPTURA REPORTE ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n FIN CAPTURA REPORTE ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
                     
-            console.log('\n INICIO CREAR EXCEL NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n INICIO CREAR EXCEL NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
             var xl = require('excel4node');
             const workbook = new xl.Workbook();
             const worksheet = workbook.addWorksheet('Reporte');
             const columns = Object.keys(Reporte.rows[0]);
+
+            const numberFormat = workbook.createStyle({
+                numberFormat: '#,##0.00', // Usa el formato que necesites (por ejemplo, sin decimales: '#,##0')
+              });
+
             columns.forEach((column, colIndex) => {
                 worksheet.cell(1, colIndex + 1).string(column);
             });
+
             Reporte.rows.forEach((row, rowIndex) => {
                 columns.forEach((column, colIndex) => {
                     const value = row[column];
-                    if (typeof value === 'number') {
-                    worksheet.cell(rowIndex + 2, colIndex + 1).number(value);
-                    } else {
-                    worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                    console.log('\n PROCESANDO COLUMNA '+colIndex);
+                    if (
+                        colIndex === 3 ||
+                        colIndex === 6 || colIndex === 9 || colIndex === 10 ||
+                        colIndex === 11 || colIndex === 12 || colIndex === 13 ||
+                        colIndex === 14 || colIndex === 15 || colIndex === 16 ||
+                        colIndex === 17 || colIndex === 18 || colIndex === 19 ||
+                        colIndex === 20 || colIndex === 21 || colIndex === 22 ||
+                        colIndex === 23 || colIndex === 24 || colIndex === 25 ||
+                        colIndex === 26 || colIndex === 28 || colIndex === 29 ||
+                        colIndex === 30 || colIndex === 31 || colIndex === 32 ||
+                        colIndex === 33 || colIndex === 34 || colIndex === 35 ||
+                        colIndex === 36 || colIndex === 37
+                    ) 
+                    {
+                        console.log('\n SI ES COLUMNA NUMERO '+colIndex);
+                        // Asegúrate de convertir correctamente a número
+                        const numberValue = Number(value.toString().trim()); // Usar trim para eliminar espacios
+                        if (!isNaN(numberValue)) 
+                        {
+                            console.log('\n NO ES NUMERO APLICO FORMATO A COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            worksheet.cell(rowIndex + 2, colIndex + 1).number(numberValue).style(numberFormat); // Aplica el estilo
+                        } 
+                        else 
+                        {
+                            console.log('\n si ES NUMERO COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            // En caso de no ser un número, guárdalo como cadena para depuración
+                            worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                        }
+                    } 
+                    else 
+                    {
+                        worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
                     }
                 });
             });
@@ -3655,10 +3732,10 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
                 {
                     console.error('Error al guardar el archivo Excel:', err);
                 } else {
-                    console.log('Archivo Excel guardado exitosamente:', filePath);
+                    console.log('\nArchivo Excel guardado exitosamente:', filePath);
                 }
             });
-            console.log('\n FIN CREAR EXCEL NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n FIN CREAR EXCEL NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
             /* CREO REPORTE EXCEL DEL REPORTE */
             /* CREO REPORTE EXCEL DEL REPORTE */
 
@@ -3668,7 +3745,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
         /* ENVIANDO REPORTE POR CORREO */
         /* ENVIANDO REPORTE POR CORREO */
-        console.log('\n INICIO ENVIANDO ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n INICIO ENVIANDO ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
         var Correos = await client.query(`
         SELECT 
         emails
@@ -3680,7 +3757,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
             asunto:'REPORTE NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"),
             email:Correos.rows[0]['emails'].split(";"),
         });
-        console.log('\n FIN ENVIANDO ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN ENVIANDO ARCHIVO NOTAS DE COBRO '+moment().format("DD-MM-YYYY HH:mm"));
         /* ENVIANDO REPORTE POR CORREO */
         /* ENVIANDO REPORTE POR CORREO */
     }
@@ -3688,10 +3765,10 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
 exports.CrearEnviar_ReporteClientes = async (req, res) => {
 
-    console.log(".::.");
-    console.log(".::.");
+    console.log("\n.::.");
+    console.log("\n.::.");
     var shc_CrearEnviar_ReporteClientes = require('node-schedule');
-    shc_CrearEnviar_ReporteClientes.scheduleJob('30 8 * * *', () => {
+    shc_CrearEnviar_ReporteClientes.scheduleJob('30 10 * * *', () => {
         FUNCT_CrearEnviar_ReporteClientes();
     });
 
@@ -3700,13 +3777,13 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         const filePath = './public/files/Reporte_Clientes.xlsx';
-        console.log('ESTE ES EL ARCHIVO '+filePath)
+        console.log('\nESTE ES EL ARCHIVO '+filePath)
         await fs.unlink(filePath, (err) => {
           if (err) {
             console.error('Error al eliminar el archivo:', err);
             return;
           }
-          console.log('Archivo eliminado exitosamente');
+          console.log('\nArchivo eliminado exitosamente');
         });
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
         /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
@@ -3714,53 +3791,55 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
         /* CREO REPORTE EXCEL DEL REPORTE */
         /* CREO REPORTE EXCEL DEL REPORTE */
         try {
-            console.log('\n INICIO CAPTURA REPORTE ARCHIVO CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n INICIO CAPTURA REPORTE ARCHIVO CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
             var Reporte = await client.query(` 
             SELECT 
-                concat(coalesce(cli.id::text, ''), ' ', coalesce(cli.codigo, '')) as "ID DWI",
-                coalesce(cli.id, 0) as "ID WSC",
-                upper(coalesce(cli.codigo, '')) as "NOMBRE CORTO",
-                upper(coalesce(cli.rut, '')) as "RUT",
-                upper(coalesce(cli."razonSocial", '')) as "RAZON SOCIAL",
-                upper(coalesce(cli."codigoSii", '')) as "CODIGO SII",
-                upper(coalesce(UPPER(cli.giro), '')) as "GIRO",
-                upper(coalesce(cli.telefono1, '')) as "TELEFONO 1",
-                upper(coalesce(cli."dteEmail", '')) as "DTE EMAIL",
-                upper(concat(coalesce(dir_1.direccion, ''), ' ', coalesce(dir_1.numero, ''))) as "DIRECCION",
-                upper(coalesce(comu_1.nombre, '')) as "COMUNA",
-                upper(coalesce(comu_1.codigo_maximize, '')) as "COMUNA MAXIMISE",
-                upper(coalesce(reg_1.nombre, '')) as "REGION",
-                upper(coalesce(rep_1.nombre, '')) as "REP NOMBRES",
-                '' as "SEGUNDO NOMBRE",
-                upper(coalesce(rep_1.apellido, '')) as "REP APELLIDOS",
-                '' as "APELLIDO MATERNO",
-                upper(coalesce(rep_1.rut, '')) as "REP RUT",
-                upper(coalesce(rep_1.email, '')) as "REP EMAIL",
-                upper(coalesce(cli.giro, '')) as "GIRO",
-                '' as "CONTACTO NOMBRE",
-                '' as "CONTACTO EMAIL",
-                '' as "CONTACTO TELEFONO",
-                '' as "CONTACTO DIRECCION",
-                'WS Cargo' as "TIPO CLIENTE",
-                upper(coalesce(comer.nombre, '')) as "COMERCIAL",
-                TO_CHAR(cli."fechaCreacion"::date, 'DD/MM/YYYY') as "FECHA CREACION",
-                CASE WHEN 
-                    coalesce(rep_file_1.cedula_1, '') <> '' AND 
-                    coalesce(rep_file_1.cedula_1_type, '') <> '' AND 
-                    coalesce(rep_file_1.cedula_1_ext, '') <> ''
-                THEN 'VERDADERO' ELSE 'VERDADERO' END as "REP CI",
-                CASE WHEN 
-                    coalesce(rep_file_1.podersimple_1, '') <> '' AND 
-                    coalesce(rep_file_1.podersimple_1_type, '') <> '' AND 
-                    coalesce(rep_file_1.podersimple_1_ext, '') <> ''
-                THEN 'VERDADERO' ELSE 'VERDADERO' END as "REP PODER",
-                '' as "COMUNA MAXIMISE",
-                '' as "REGION MAXIMISE",
-                CASE WHEN cli.estado_consolidado = 'SI' THEN 'CLIENTE' ELSE 'OPORTUNIDAD' END as "ESTADO COMERCIAL",
-                coalesce((SELECT sum(t.volumen_recepcionado) FROM public.tracking t WHERE t.fk_cliente = cli.id AND t.estado >= 0), 0) as "VOLUMEN TOTAL",
-                coalesce((SELECT to_char(t.fecha_recepcion, 'DD-MM-YYYY') FROM public.tracking t WHERE t.fk_cliente = cli.id ORDER BY t.id asc LIMIT 1), '') as "FECHA RECEPCION"
+            concat(coalesce(cli.id::text, ''), ' ', coalesce(cli.codigo, '')) as "ID DWI",
+            coalesce(cli.id, 0) as "ID WSC",
+            upper(coalesce(cli.codigo, '')) as "NOMBRE CORTO",
+            upper(coalesce(cli.rut, '')) as "RUT",
+            upper(coalesce(cli."razonSocial", '')) as "RAZON SOCIAL",
+            upper(coalesce(cli."codigoSii", '')) as "CODIGO SII",
+            upper(coalesce(UPPER(cli.giro), '')) as "GIRO",
+            upper(coalesce(cli.telefono1, '')) as "TELEFONO 1",
+            upper(coalesce(cli."dteEmail", '')) as "DTE EMAIL",
+            upper(concat(coalesce(dir_1.direccion, ''), ' ', coalesce(dir_1.numero, ''))) as "DIRECCION",
+            upper(coalesce(comu_1.nombre, '')) as "COMUNA",
+            upper(coalesce(comu_1.codigo_maximize, '')) as "COMUNA MAXIMISE",
+            upper(coalesce(reg_1.nombre, '')) as "REGION",
+            upper(coalesce(rep_1.nombre, '')) as "REP NOMBRES",
+            '' as "SEGUNDO NOMBRE",
+            upper(coalesce(rep_1.apellido, '')) as "REP APELLIDOS",
+            '' as "APELLIDO MATERNO",
+            upper(coalesce(rep_1.rut, '')) as "REP RUT",
+            upper(coalesce(rep_1.email, '')) as "REP EMAIL",
+            upper(coalesce(cli.giro, '')) as "GIRO",
+            '' as "CONTACTO NOMBRE",
+            '' as "CONTACTO EMAIL",
+            '' as "CONTACTO TELEFONO",
+            '' as "CONTACTO DIRECCION",
+            'WS Cargo' as "TIPO CLIENTE",
+            upper(coalesce(comer.nombre, '')) as "COMERCIAL",
+            TO_CHAR(cli."fechaCreacion"::date, 'DD/MM/YYYY') as "FECHA CREACION",
+            CASE WHEN 
+                coalesce(rep_file_1.cedula_1, '') <> '' AND 
+                coalesce(rep_file_1.cedula_1_type, '') <> '' AND 
+                coalesce(rep_file_1.cedula_1_ext, '') <> ''
+            THEN 'VERDADERO' ELSE 'VERDADERO' END as "REP CI",
+            CASE WHEN 
+                coalesce(rep_file_1.podersimple_1, '') <> '' AND 
+                coalesce(rep_file_1.podersimple_1_type, '') <> '' AND 
+                coalesce(rep_file_1.podersimple_1_ext, '') <> ''
+            THEN 'VERDADERO' ELSE 'VERDADERO' END as "REP PODER",
+            '' as "COMUNA MAXIMISE",
+            '' as "REGION MAXIMISE",
+            CASE WHEN cli.estado_consolidado = 'SI' THEN 'CLIENTE' ELSE 'OPORTUNIDAD' END as "ESTADO COMERCIAL",
+            coalesce((SELECT sum(t.volumen_recepcionado) FROM public.tracking t WHERE t.fk_cliente = cli.id AND t.estado >= 0), 0) as "VOLUMEN TOTAL",
+            coalesce((SELECT to_char(t.fecha_recepcion, 'DD-MM-YYYY') FROM public.tracking t WHERE t.fk_cliente = cli.id ORDER BY t.id asc LIMIT 1), '') as "FECHA RECEPCION",
+            coalesce(ori.nombre,'INDEFINIDO') as ORIGEN
             FROM 
                 public.clientes as cli
+            left join public.gc_contactos_tipos as ori on coalesce(cli.fk_origen,0)=ori.id
             LEFT JOIN public.clientes_direcciones as dir_1 ON dir_1.id = (
                 SELECT temp1.id FROM public.clientes_direcciones as temp1 
                 WHERE temp1.fk_cliente = cli.id AND temp1.fk_tipo = 1 
@@ -3780,9 +3859,9 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
                 ORDER BY temp1.id DESC LIMIT 1 
             )
             `);
-            console.log('\n FIN CAPTURA REPORTE ARCHIVO CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n FIN CAPTURA REPORTE ARCHIVO CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
                     
-            console.log('\n INICIO CREAR EXCEL CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n INICIO CREAR EXCEL CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
             var xl = require('excel4node');
             const workbook = new xl.Workbook();
             const worksheet = workbook.addWorksheet('Hoja1');
@@ -3805,10 +3884,10 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
                 {
                     console.error('Error al guardar el archivo Excel:', err);
                 } else {
-                    console.log('Archivo Excel guardado exitosamente:', filePath);
+                    console.log('\nArchivo Excel guardado exitosamente:', filePath);
                 }
             });
-            console.log('\n FIN CREAR EXCEL CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+            console.log('\n\n FIN CREAR EXCEL CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
             /* CREO REPORTE EXCEL DEL REPORTE */
             /* CREO REPORTE EXCEL DEL REPORTE */
 
@@ -3818,7 +3897,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
 
         /* ENVIANDO REPORTE POR CORREO */
         /* ENVIANDO REPORTE POR CORREO */
-        console.log('\n INICIO ENVIANDO ARCHIVO REPORTE CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n INICIO ENVIANDO ARCHIVO REPORTE CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
         var Correos = await client.query(`
         SELECT 
         emails
@@ -3830,7 +3909,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
             asunto:'REPORTE CLIENTES '+moment().format("DD-MM-YYYY HH:mm"),
             email:Correos.rows[0]['emails'].split(";"),
         });
-        console.log('\n FIN ENVIANDO ARCHIVO REPORTE CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
+        console.log('\n\n FIN ENVIANDO ARCHIVO REPORTE CLIENTES '+moment().format("DD-MM-YYYY HH:mm"));
         /* ENVIANDO REPORTE POR CORREO */
         /* ENVIANDO REPORTE POR CORREO */
     }
