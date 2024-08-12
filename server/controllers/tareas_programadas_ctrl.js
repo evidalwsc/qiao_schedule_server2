@@ -3263,6 +3263,343 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
     }
 };
 
+exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
+
+    console.log("\n.::. MASTER BD");
+    var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('0 9 * * *', () => {
+        FUNCT_CrearEnviar_ReporteMasterBD_New();
+    });
+
+    async function FUNCT_CrearEnviar_ReporteMasterBD_New(){
+
+        /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
+        /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
+        const filePath = './public/files/Reporte_Master_BD.xlsx';
+        console.log('\nESTE ES EL ARCHIVO '+filePath)
+        await fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error('Error al eliminar el archivo:', err);
+            return;
+          }
+          console.log('\nArchivo eliminado exitosamente');
+        });
+        /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
+        /* PRIMERO ELIMINAMOS EL ARCHIVO ACTUAL */
+
+        /* SEGUNDO CALCULO DEL REPORTE */
+        /* SEGUNDO CALCULO DEL REPORTE */
+        console.log('\nREPORTE MASTER BD 1');
+        var MesesCerrados = await client.query(`
+        SELECT 
+        ing_fk_responsable
+        , ing_fecha
+        , del_fk_responsable
+        , del_fecha
+        , id
+        , anio
+        , mes
+        FROM public.master_bd_mes_cerrado
+        where
+        del_fk_responsable=0
+        `);
+    
+        var CondicioDelete = '';
+        var CondicionSelect = '';
+    
+        console.log('\n\n CANTIDAD DE MESES CERRADOS '+JSON.stringify(MesesCerrados));
+    
+        if(MesesCerrados.rows.length>0)
+        {
+            for(var i=0; i<MesesCerrados.rows.length; i++) 
+            {
+                if(i==0)
+                {
+                    CondicioDelete = ` where substring(n_carpeta,2,4)!='`+MesesCerrados.rows[i].anio.substring(2,4)+``+MesesCerrados.rows[i].mes+`' `;
+                }
+                else
+                {
+                    CondicioDelete += ` and substring(n_carpeta,2,4)!='`+MesesCerrados.rows[i].anio.substring(2,4)+``+MesesCerrados.rows[i].mes+`' `;
+                }
+    
+                CondicionSelect += ` and substring(d.n_carpeta,2,4)!='`+MesesCerrados.rows[i].anio.substring(2,4)+``+MesesCerrados.rows[i].mes+`' `;
+            }
+        }
+    
+        console.log('\n\n CONDICION DELETE '+JSON.stringify(CondicioDelete));
+    
+        console.log('\n\n CONDICION SELECT '+JSON.stringify(CondicionSelect));
+    
+        console.log(`\nQUERY DELETE\n delete from public.master_bd `+CondicioDelete+` `);
+        // await client.query(` delete from public.master_bd `+CondicioDelete+` `);
+        await client.query(` delete from public.master_bd `);
+    
+        console.log('\n\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+    
+        await client.query(`
+        insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio) 
+        SELECT
+        DISTINCT 
+        pro."createdAt" as fecha_creacion
+        , pro.id as nc_id
+        , d.n_carpeta as N_CARPETA
+        , CASE WHEN pro.fk_despacho=-1 THEN d.rut ELSE c.rut END as RUT
+        , d.contenedor as CONTENEDOR
+        , coalesce(d.fk_nave, 0) as ID_NAVE
+        , coalesce(d.nave_nombre, '[No ingresado]') as NOMBRE_NAVE
+        , to_char(d.eta, 'DD-MM-YYYY') as ETA
+        , ROUND(pro.carga, 2) as M3
+        , round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) as MONTO_DIN
+        , round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0) as MONTO_DIN_AJUSTADO
+        , ROUND(coalesce(pro.carga, 0)*coalesce(pro.costo, 0)+coalesce(pro.pb, 0), 2) as MONTO_CARGA_USD
+        , ROUND((coalesce(pro.carga, 0)*coalesce(pro.costo, 0)+coalesce(pro.pb, 0))*coalesce(pro.tc2, 0)) as MONTO_CARGA_CLP
+        , ROUND((coalesce(pro.carga, 0)*coalesce(pro.costo, 0)+coalesce(pro.pb, 0))*coalesce(pro.tc2, 0))+coalesce(pro.ajuste_m_2, 0) as MONTO_CARGA_CLP_AJUSTADO
+        , ROUND(coalesce(pro.aforo, 0) + coalesce(pro.isp, 0) + coalesce(pro.cda, 0) + coalesce(pro.almacenaje, 0) + ( coalesce(pro.pallet_valor_u, 0) * coalesce(pro.pallet, 0)) + coalesce(pro.ttvp, 0) + coalesce(pro.twsc, 0) + coalesce(pro.otros, 0) + coalesce(pro.ajuste_m_2, 0) + coalesce(pro.ajuste_m_1, 0)) as TOTAL_GASTOS
+        , ROUND (
+        round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0)
+        + ROUND(coalesce(pro.aforo, 0) + coalesce(pro.isp, 0) + coalesce(pro.cda, 0) + coalesce(pro.almacenaje, 0) + ( coalesce(pro.pallet_valor_u, 0) * coalesce(pro.pallet, 0)) + coalesce(pro.ttvp, 0) + coalesce(pro.twsc, 0) + coalesce(pro.otros, 0) + coalesce(pro.ajuste_m_2, 0) + coalesce(pro.ajuste_m_1, 0))
+        + ( coalesce(pro.tc2, 0) * 
+        ( 
+        coalesce(pro.pb, 0) + coalesce(pro.carga, 0) * coalesce(pro.excento, 0)
+        + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) *0.19 ) )
+        ) )
+        ) as TOTAL_PROVISION
+        , (
+        ROUND (
+        round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0)
+        + ROUND(coalesce(pro.aforo, 0) + coalesce(pro.isp, 0) + coalesce(pro.cda, 0) + coalesce(pro.almacenaje, 0) + ( coalesce(pro.pallet_valor_u, 0) * coalesce(pro.pallet, 0)) + coalesce(pro.ttvp, 0) + coalesce(pro.twsc, 0) + coalesce(pro.otros, 0) + coalesce(pro.ajuste_m_2, 0) + coalesce(pro.ajuste_m_1, 0))
+        + ( coalesce(pro.tc2, 0) * 
+        ( 
+        coalesce(pro.pb, 0) + coalesce(pro.carga, 0) * coalesce(pro.excento, 0)
+        + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) *0.19 ) )
+        ) )
+        ) 
+        ) -
+        (
+        ROUND(coalesce((
+            select
+            SUM(case when cbc.conversion is null then cbc.debit_amt else (cbc.debit_amt*cbc.conversion) end)
+            from public.wsc_envio_asientos_cabeceras cbc
+            where
+            cbc.carpeta=d.n_carpeta 
+            and cbc.estado<>'false' 
+            and cbc.estado<>'ELIMINADO' 
+            and coalesce(cbc.tipo_pago2,'')<>'COMISION'
+            and coalesce(cbc.estado,'')<>'ERROR DUPLICADO'
+            and cbc.com_text like '%Ingreso de pagos de clientes%'
+            ), 0))
+        ) as TOTAL_A_PAGAR
+        , ROUND(coalesce((
+            select
+            SUM(case when cbc.conversion is null then cbc.debit_amt else (cbc.debit_amt*cbc.conversion) end)
+            from public.wsc_envio_asientos_cabeceras cbc
+            where
+            cbc.carpeta=d.n_carpeta 
+            and cbc.estado<>'false' 
+            and cbc.estado<>'ELIMINADO' 
+            and coalesce(cbc.tipo_pago2,'')<>'COMISION'
+            and coalesce(cbc.estado,'')<>'ERROR DUPLICADO'
+            and cbc.com_text like '%Ingreso de pagos de clientes%'
+            ), 0)) as MONTO_PAGADO
+        , SUBSTRING(d.n_carpeta, 2, 2) as ANO
+        , SUBSTRING(d.n_carpeta, 4, 2) as MES
+        , SUBSTRING(d.n_carpeta, 1, 7) as BASE
+        , ROUND(pro.aforo) as AFORO
+        , ROUND(pro.cda) as CDA
+        , ROUND(pro.isp) as ISP
+        , ROUND(coalesce(pro.pallet, 0)*coalesce(pro.pallet_valor_u, 0)) as PALLETS
+        , ROUND(coalesce(pro.ttvp, 0)) as TVP
+        , ROUND(coalesce(pro.twsc, 0)) as OTRO_TRANSPORTE
+        , ROUND(coalesce(pro.otros, 0)) as otros
+        , coalesce(pro.detalle_otro, '') as detalle_otro
+        , ROUND(coalesce(pro.ajuste_m_1, 0)) as MONTO_AJU_DIN
+        , coalesce(pro.ajuste_c_1, '') as DETALLE_AJU_DIN
+        , ROUND(coalesce(pro.ajuste_m_2, 0)) as MONTO_AJU_SERV
+        , coalesce(pro.ajuste_c_2, '') as DETALLE_AJU_SERV
+        , ROUND(pro.tc2, 2) as TC_SERVICIO
+        , pro.pb as PRECIO_BASE
+        , pro.costo as PRECIO_UNITARIO_X_M3
+        , coalesce(ejec.nombre, '') as EJECUTIVO
+        , to_char(d.eta, 'MM') as MES_ETA
+        , coalesce(pro.din, 0) as din
+        , d.fk_cliente
+        , coalesce(to_char(pro.din_ingresada_fecha, 'DD-MM-YYYY'), '') as din_ingresada_fecha
+        , coalesce(c.codigo, '') as nombre_cliente
+        , CASE WHEN pro.din_pagada_flag=true THEN 'SI' ELSE 'NO' END as din_pagada_flag
+        , CASE WHEN pro.din_pagada_flag=true THEN to_char(pro.din_pagada_fecha, 'DD-MM-YYYY') ELSE '' END as din_pagada_fecha
+        , (select temp1.id from public.consolidado as temp1 where temp1.n_carpeta=d.n_carpeta order by id desc limit 1) as fk_servicio
+        , 'NO' as DOC_FACTURA
+        , 'NO' as DOC_DIN
+        , 'NO' as DOC_F_AGENCIA
+        , 'NO' as DOC_TGR
+        , ROUND(pro.almacenaje) as ALMACENAJE
+        FROM public.notas_cobros pro
+        INNER JOIN public.despachos d ON CASE WHEN pro.fk_despacho = -1 THEN pro.codigo_unificacion=d.codigo_unificacion ELSE pro.fk_despacho = d.id END
+        LEFT JOIN public.clientes c ON c.id = d.fk_cliente and c.valido_reportes='SI'
+        LEFT JOIN public.usuario as ejec ON ejec.id = c.fk_comercial
+        where
+        pro.estado<>false
+
+        `+CondicionSelect+`
+        `);
+    
+        /*
+        `+CondicionSelect+`
+        */
+
+        console.log('\n\n FIN CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+    
+        var fecha_carga = moment().format("DD-MM-YYYY HH:mm");
+    
+        console.log(` update public.master_bd set ejecucion_fecha='`+fecha_carga+`', link_descarga='`+process.env.UrlRemoteServer1+`get_master_bd' `);
+        await client.query(` update public.master_bd set ejecucion_fecha='`+fecha_carga+`', link_descarga='`+process.env.UrlRemoteServer1+`get_master_bd' `);
+        /* SEGUNDO CALCULO DEL REPORTE */
+        /* SEGUNDO CALCULO DEL REPORTE */
+
+
+        /* CREO REPORTE EXCEL DEL REPORTE */
+        /* CREO REPORTE EXCEL DEL REPORTE */
+        console.log('\n\n INICIO CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        var Reporte = await client.query(` 
+        SELECT 
+        n_carpeta as "N° CARPETA"
+        , rut as "RUT"
+        , contenedor as "CONTENEDOR"
+        , id_nave as "ID NAVE"
+        , nombre_nave as "NOMBRE NAVE"
+        , eta as "ETA"
+        , m3 as "M3"
+        , monto_din as "MONTO DIN"
+        , monto_din_ajuste as "MONTO DIN AJUSTE"
+        , monto_carga_usd as "MONTO CARGA USD"
+        , monto_carga_clp as "MONTO CARGA CLP"
+        , monto_carga_clp_ajuste as "MONTO CARGA CLP AJUSTE"
+        , total_gastos as "TOTAL GASTOS"
+        , total_provision as "TOTAL PROVISION"
+        , total_a_pagar as "TOTAL A PAGAR"
+        , monto_pagado as "MONTO PAGADO"
+        , ano as "AÑO"
+        , mes as "MES"
+        , base as "BASE"
+        , aforo as "AFORO"
+        , cda as "CDA"
+        , isp as "ISP"
+        , pallets as "PALLETS"
+        , tvp as "TVP"
+        , otro_transporte as "OTRO TRANSPORTE"
+        , otros as "OTROS"
+        , detalle_otro as "DETALLE OTROS"
+        , monto_aju_din as "MONTO AJUSTE DIN"
+        , detalle_aju_din as "DETALLE AJUSTE DIN"
+        , monto_aju_serv as "MONTO AJUSTE SERV"
+        , detalle_aju_serv as "DETALLE AJUSTE SERV"
+        , tc_servicio as "TC SERVICIO"
+        , precio_base as "PRECIO BASE"
+        , precio_unitario_x_m3 as "PRECIO UNITARIO XM3"
+        , ejecutivo as "EJECUTIVO"
+        , mes_eta as "MES ETA"
+        , din as "N DIN"
+        , fk_cliente as "ID CLIENTE"
+        , nombre_cliente as "CODIGO CLIENTE"
+        , din_pagada_flag as "DIN PAGADA TESORERIA"
+        , din_pagada_fecha as "FECHA PAGO DIN"
+        , din_ingresada_fecha as "FECHA INGRESO DIN"
+        , fk_servicio as "ID SERVICIO"
+        , 'NO' as "DOC FACTURA"
+        , 'NO' as "DOC DIN"
+        , 'NO' as "DOC F.AGENCIA"
+        , 'NO' as "DOC TGR"
+
+        FROM public.master_bd 
+        `);
+        var xl = require('excel4node');
+        const workbook = new xl.Workbook();
+        const worksheet = workbook.addWorksheet('Master_Bd');
+        const columns = Object.keys(Reporte.rows[0]);
+
+        const numberFormat = workbook.createStyle({
+            numberFormat: '#,##0.00', // Usa el formato que necesites (por ejemplo, sin decimales: '#,##0')
+          });
+
+
+        columns.forEach((column, colIndex) => {
+            worksheet.cell(1, colIndex + 1).string(column);
+        });
+
+        Reporte.rows.forEach((row, rowIndex) => {
+            columns.forEach((column, colIndex) => {
+                const value = row[column];
+                    console.log('\n PROCESANDO COLUMNA '+colIndex);
+                    if (
+                        colIndex === 7  || colIndex === 8   || colIndex === 9   ||
+                        colIndex === 10 || colIndex === 11  || colIndex === 12  ||
+                        colIndex === 13 || colIndex === 14  || colIndex === 15  ||
+                        colIndex === 19 || colIndex === 20  || colIndex === 21  ||
+                        colIndex === 22 || colIndex === 23  || colIndex === 24  ||
+                        colIndex === 25 || colIndex === 27  || colIndex === 29  ||
+                        colIndex === 31 || colIndex === 32  || colIndex === 33
+                    ) 
+                    {
+                        console.log('\n SI ES COLUMNA NUMERO '+colIndex);
+                        // Asegúrate de convertir correctamente a número
+                        const numberValue = Number(value.toString().trim()); // Usar trim para eliminar espacios
+                        if (!isNaN(numberValue)) 
+                        {
+                            console.log('\n NO ES NUMERO APLICO FORMATO A COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            worksheet.cell(rowIndex + 2, colIndex + 1).number(numberValue).style(numberFormat); // Aplica el estilo
+                        } 
+                        else 
+                        {
+                            console.log('\n si ES NUMERO COLUMNA '+colIndex+' CONTENIDO '+numberValue);
+                            // En caso de no ser un número, guárdalo como cadena para depuración
+                            worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                        }
+                    } 
+                    else 
+                    {
+                        worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
+                    }
+            });
+        });
+        workbook.write('./public/files/Reporte_Master_BD.xlsx', (err, stats) => {
+            if (err) 
+            {
+                console.error('Error al guardar el archivo Excel:', err);
+            } else {
+                console.log('\nArchivo Excel guardado exitosamente:', filePath);
+            }
+        });
+        console.log('\n\n FIN CREAR EXCEL MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        /* CREO REPORTE EXCEL DEL REPORTE */
+        /* CREO REPORTE EXCEL DEL REPORTE */
+        
+        
+        
+        console.log('\n\n FIN CREACION ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        /* CREO REPORTE EXCEL DEL REPORTE */
+        /* CREO REPORTE EXCEL DEL REPORTE */        
+
+        /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
+        /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
+        console.log('\n\n INICIO ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        var Correos = await client.query(`
+        SELECT 
+        emails
+        FROM public.reportes_email
+        where
+        id=1
+        `);
+        
+        await enviarEmail.mail_reporte_masterbd({
+            asunto:'REPORTE MASTER BD '+moment().format("DD-MM-YYYY HH:mm"),
+            email:Correos.rows[0]['emails'].split(";"),
+        });
+        console.log('\n\n FIN ENVIANDO ARCHIVO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
+        /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
+        /* INICIO ENVIANDO REPORTE EXCEL DEL REPORTE */
+    }
+};
+
 exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
 
     console.log("\n.::. MASTER BD");
