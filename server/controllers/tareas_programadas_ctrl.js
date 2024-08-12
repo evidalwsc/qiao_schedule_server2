@@ -2364,7 +2364,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     var shc_ProcesarExcelGatillos = require('node-schedule');
-    shc_ProcesarExcelGatillos.scheduleJob('10 9 * * *', () => {
+    shc_ProcesarExcelGatillos.scheduleJob('0 7 * * *', () => {
         function_ProcesarExcelGatillos_CronJob();
     });
 
@@ -3265,9 +3265,9 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
 
 exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
 
-    console.log("\n.::. MASTER BD");
+    console.log("\n.::. MASTER BD NEW");
     var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('0 9 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('2 9 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD_New();
     });
 
@@ -3330,14 +3330,14 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
     
         console.log('\n\n CONDICION SELECT '+JSON.stringify(CondicionSelect));
     
-        console.log(`\nQUERY DELETE\n delete from public.master_bd `+CondicioDelete+` `);
+        console.log(`\nQUERY DELETE\n delete from public.master_bd  `);
         // await client.query(` delete from public.master_bd `+CondicioDelete+` `);
         await client.query(` delete from public.master_bd `);
     
         console.log('\n\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
     
         await client.query(`
-        insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio) 
+        insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio, doc_factura, doc_din, doc_f_agencia, doc_tgr, almacenaje) 
         SELECT
         DISTINCT 
         pro."createdAt" as fecha_creacion
@@ -3604,7 +3604,7 @@ exports.CrearEnviar_ReporteMasterBD = async (req, res) => {
 
     console.log("\n.::. MASTER BD");
     var shc_CrearEnviar_ReporteMasterBD = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD.scheduleJob('30 9 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD.scheduleJob('30 7 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD();
     });
 
@@ -3906,7 +3906,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
     console.log("\n.::. CrearEnviar_ReporteNotasDeCobro");
     var shc_CrearEnviar_ReporteNotasDeCobro = require('node-schedule');
-    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('0 10 * * *', () => {
+    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('0 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteNotasDeCobro();
     });
 
@@ -4129,7 +4129,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
     console.log("\n.::.");
     console.log("\n.::.");
     var shc_CrearEnviar_ReporteClientes = require('node-schedule');
-    shc_CrearEnviar_ReporteClientes.scheduleJob('30 10 * * *', () => {
+    shc_CrearEnviar_ReporteClientes.scheduleJob('30 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteClientes();
     });
 
