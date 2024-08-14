@@ -40,30 +40,6 @@ exports.mail_envios_server2 = async (req, resp) => {
 
     async function mail_envios_server2()
     {
-        console.log("\nINICIO BLOQUEANDO CONTENEDOR AFORO ");
-        await client.query(`
-        update
-        public.consolidado
-        set
-        estado_pago='NO'
-        where
-        n_carpeta='H24070401'
-        or n_carpeta='H24070402'
-        or n_carpeta='H24070408'
-        or n_carpeta='H24070407'
-        or n_carpeta='H24070404'
-        or n_carpeta='H24070403'
-        or n_carpeta='H24070405'
-        or n_carpeta='H24070409'
-        or n_carpeta='H24070406'
-        or n_carpeta='H24070411'
-        or n_carpeta='H24070410'
-        or n_carpeta='H24070412'
-        or n_carpeta='H24070413'
-        or n_carpeta='H24070414'
-        `);
-        console.log("\nFIN BLOQUEANDO CONTENEDOR AFORO ");
-        
         console.log(`
         \n\n
         SELECT
