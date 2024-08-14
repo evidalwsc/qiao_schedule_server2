@@ -3267,7 +3267,7 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
 
     console.log("\n.::. MASTER BD NEW");
     var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('2 9 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('30 7 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD_New();
     });
 
@@ -3332,6 +3332,7 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
     
         console.log(`\nQUERY DELETE\n delete from public.master_bd  `);
         // await client.query(` delete from public.master_bd `+CondicioDelete+` `);
+
         await client.query(` delete from public.master_bd `);
     
         console.log('\n\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
@@ -3440,7 +3441,6 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
         where
         pro.estado<>false
 
-        `+CondicionSelect+`
         `);
     
         /*
