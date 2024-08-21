@@ -9,7 +9,6 @@ const clientExp = require('../config/db.client.experienciadigital');
 const QRCode = require("qrcode");
 const PDF = require('pdfkit');//Importando la libreria de PDFkit
 const { verify } = require('crypto');
-const zoho = require('../../apis/zoho_crm');
 const funcionesCompartidasCtrl = require('./funcionesCompartidasCtrl.js');
 const PDFDocument = require('pdfkit');
 const axios = require('axios');
