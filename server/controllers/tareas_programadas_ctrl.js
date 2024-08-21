@@ -3243,7 +3243,7 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
 
     console.log("\n.::. MASTER BD NEW");
     var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('30 7 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('10 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD_New();
     });
 
@@ -3302,30 +3302,24 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
             }
         }
     
-        console.log('\n\n CONDICION DELETE '+JSON.stringify(CondicioDelete));
-    
         console.log('\n\n CONDICION SELECT '+JSON.stringify(CondicionSelect));
     
-        console.log(`\nQUERY DELETE\n delete from public.master_bd  `);
-        // await client.query(` delete from public.master_bd `+CondicioDelete+` `);
+        await client.query(` delete from public.master_bd `+CondicioDelete+` `);
 
-        await client.query(` delete from public.master_bd `);
-    
         console.log('\n\n INICIO CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
     
-        await client.query(`
-        insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio, doc_factura, doc_din, doc_f_agencia, doc_tgr, almacenaje) 
+        var QuerySelectMasterBd = `
         SELECT
-        DISTINCT 
+        DISTINCT
         pro."createdAt" as fecha_creacion
-        , pro.id as nc_id
-        , d.n_carpeta as N_CARPETA
-        , CASE WHEN pro.fk_despacho=-1 THEN d.rut ELSE c.rut END as RUT
-        , d.contenedor as CONTENEDOR
+        , coalesce(pro.id,0) as nc_id
+        , coalesce(d.n_carpeta,'') as N_CARPETA
+        , CASE WHEN pro.fk_despacho=-1 THEN coalesce(d.rut,'') ELSE coalesce(c.rut,'') END as RUT
+        , coalesce(d.contenedor,'') as CONTENEDOR
         , coalesce(d.fk_nave, 0) as ID_NAVE
         , coalesce(d.nave_nombre, '[No ingresado]') as NOMBRE_NAVE
-        , to_char(d.eta, 'DD-MM-YYYY') as ETA
-        , ROUND(pro.carga, 2) as M3
+        , coalesce(to_char(d.eta, 'DD-MM-YYYY'),'') as ETA
+        , ROUND(coalesce(pro.carga,0), 2) as M3
         , round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) as MONTO_DIN
         , round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0) as MONTO_DIN_AJUSTADO
         , ROUND(coalesce(pro.carga, 0)*coalesce(pro.costo, 0)+coalesce(pro.pb, 0), 2) as MONTO_CARGA_USD
@@ -3335,8 +3329,8 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
         , ROUND (
         round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0)
         + ROUND(coalesce(pro.aforo, 0) + coalesce(pro.isp, 0) + coalesce(pro.cda, 0) + coalesce(pro.almacenaje, 0) + ( coalesce(pro.pallet_valor_u, 0) * coalesce(pro.pallet, 0)) + coalesce(pro.ttvp, 0) + coalesce(pro.twsc, 0) + coalesce(pro.otros, 0) + coalesce(pro.ajuste_m_2, 0) + coalesce(pro.ajuste_m_1, 0))
-        + ( coalesce(pro.tc2, 0) * 
-        ( 
+        + ( coalesce(pro.tc2, 0) *
+        (
         coalesce(pro.pb, 0) + coalesce(pro.carga, 0) * coalesce(pro.excento, 0)
         + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) *0.19 ) )
         ) )
@@ -3345,12 +3339,12 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
         ROUND (
         round( ROUND(((coalesce(pro.cif, 0)+coalesce(pro.arancel, 0))*19/100)+coalesce(pro.arancel, 0)+coalesce(pro.impto_port, 0), 2) * coalesce(pro.tc,0)) + coalesce(pro.ajuste_m_1, 0)
         + ROUND(coalesce(pro.aforo, 0) + coalesce(pro.isp, 0) + coalesce(pro.cda, 0) + coalesce(pro.almacenaje, 0) + ( coalesce(pro.pallet_valor_u, 0) * coalesce(pro.pallet, 0)) + coalesce(pro.ttvp, 0) + coalesce(pro.twsc, 0) + coalesce(pro.otros, 0) + coalesce(pro.ajuste_m_2, 0) + coalesce(pro.ajuste_m_1, 0))
-        + ( coalesce(pro.tc2, 0) * 
-        ( 
+        + ( coalesce(pro.tc2, 0) *
+        (
         coalesce(pro.pb, 0) + coalesce(pro.carga, 0) * coalesce(pro.excento, 0)
         + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) + ( ( coalesce(pro.carga, 0) * coalesce(pro.afecto, 0) ) *0.19 ) )
         ) )
-        ) 
+        )
         ) -
         (
         ROUND(coalesce((
@@ -3358,9 +3352,9 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
             SUM(case when cbc.conversion is null then cbc.debit_amt else (cbc.debit_amt*cbc.conversion) end)
             from public.wsc_envio_asientos_cabeceras cbc
             where
-            cbc.carpeta=d.n_carpeta 
-            and cbc.estado<>'false' 
-            and cbc.estado<>'ELIMINADO' 
+            cbc.carpeta=d.n_carpeta
+            and cbc.estado<>'false'
+            and cbc.estado<>'ELIMINADO'
             and coalesce(cbc.tipo_pago2,'')<>'COMISION'
             and coalesce(cbc.estado,'')<>'ERROR DUPLICADO'
             and cbc.com_text like '%Ingreso de pagos de clientes%'
@@ -3371,19 +3365,19 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
             SUM(case when cbc.conversion is null then cbc.debit_amt else (cbc.debit_amt*cbc.conversion) end)
             from public.wsc_envio_asientos_cabeceras cbc
             where
-            cbc.carpeta=d.n_carpeta 
-            and cbc.estado<>'false' 
-            and cbc.estado<>'ELIMINADO' 
+            cbc.carpeta=d.n_carpeta
+            and cbc.estado<>'false'
+            and cbc.estado<>'ELIMINADO'
             and coalesce(cbc.tipo_pago2,'')<>'COMISION'
             and coalesce(cbc.estado,'')<>'ERROR DUPLICADO'
             and cbc.com_text like '%Ingreso de pagos de clientes%'
             ), 0)) as MONTO_PAGADO
-        , SUBSTRING(d.n_carpeta, 2, 2) as ANO
-        , SUBSTRING(d.n_carpeta, 4, 2) as MES
-        , SUBSTRING(d.n_carpeta, 1, 7) as BASE
-        , ROUND(pro.aforo) as AFORO
-        , ROUND(pro.cda) as CDA
-        , ROUND(pro.isp) as ISP
+        , SUBSTRING(coalesce(d.n_carpeta,''), 2, 2) as ANO
+        , SUBSTRING(coalesce(d.n_carpeta,''), 4, 2) as MES
+        , SUBSTRING(coalesce(d.n_carpeta,''), 1, 7) as BASE
+        , ROUND(coalesce(pro.aforo,0)) as AFORO
+        , ROUND(coalesce(pro.cda,0)) as CDA
+        , ROUND(coalesce(pro.isp,0)) as ISP
         , ROUND(coalesce(pro.pallet, 0)*coalesce(pro.pallet_valor_u, 0)) as PALLETS
         , ROUND(coalesce(pro.ttvp, 0)) as TVP
         , ROUND(coalesce(pro.twsc, 0)) as OTRO_TRANSPORTE
@@ -3393,35 +3387,38 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
         , coalesce(pro.ajuste_c_1, '') as DETALLE_AJU_DIN
         , ROUND(coalesce(pro.ajuste_m_2, 0)) as MONTO_AJU_SERV
         , coalesce(pro.ajuste_c_2, '') as DETALLE_AJU_SERV
-        , ROUND(pro.tc2, 2) as TC_SERVICIO
-        , pro.pb as PRECIO_BASE
-        , pro.costo as PRECIO_UNITARIO_X_M3
+        , ROUND(coalesce(pro.tc2,0), 2) as TC_SERVICIO
+        , coalesce(pro.pb,0) as PRECIO_BASE
+        , coalesce(pro.costo,0) as PRECIO_UNITARIO_X_M3
         , coalesce(ejec.nombre, '') as EJECUTIVO
-        , to_char(d.eta, 'MM') as MES_ETA
+        , coalesce(to_char(d.eta, 'MM'),'') as MES_ETA
         , coalesce(pro.din, 0) as din
-        , d.fk_cliente
+        , coalesce(d.fk_cliente,0) as fk_cliente
         , coalesce(to_char(pro.din_ingresada_fecha, 'DD-MM-YYYY'), '') as din_ingresada_fecha
         , coalesce(c.codigo, '') as nombre_cliente
         , CASE WHEN pro.din_pagada_flag=true THEN 'SI' ELSE 'NO' END as din_pagada_flag
-        , CASE WHEN pro.din_pagada_flag=true THEN to_char(pro.din_pagada_fecha, 'DD-MM-YYYY') ELSE '' END as din_pagada_fecha
-        , (select temp1.id from public.consolidado as temp1 where temp1.n_carpeta=d.n_carpeta order by id desc limit 1) as fk_servicio
+        , CASE WHEN pro.din_pagada_flag=true THEN coalesce(to_char(pro.din_pagada_fecha, 'DD-MM-YYYY'),'') ELSE '' END as din_pagada_fecha
+        , (select coalesce(temp1.id,0) from public.consolidado as temp1 where temp1.n_carpeta=d.n_carpeta order by id desc limit 1) as fk_servicio
         , 'NO' as DOC_FACTURA
         , 'NO' as DOC_DIN
         , 'NO' as DOC_F_AGENCIA
         , 'NO' as DOC_TGR
-        , ROUND(pro.almacenaje) as ALMACENAJE
+        , ROUND(coalesce(pro.almacenaje,0)) as ALMACENAJE
         FROM public.notas_cobros pro
         INNER JOIN public.despachos d ON CASE WHEN pro.fk_despacho = -1 THEN pro.codigo_unificacion=d.codigo_unificacion ELSE pro.fk_despacho = d.id END
         LEFT JOIN public.clientes c ON c.id = d.fk_cliente and c.valido_reportes='SI'
         LEFT JOIN public.usuario as ejec ON ejec.id = c.fk_comercial
         where
         pro.estado<>false
-
-        `);
-    
-        /*
         `+CondicionSelect+`
-        */
+        `;
+
+        console.log('\n\n QUERY SELECT MASTERBT \n\n'+QuerySelectMasterBd);
+
+        await client.query(`
+        insert into public.master_bd (fecha_creacion, nc_id, n_carpeta, rut, contenedor, id_nave, nombre_nave, eta, m3, monto_din, monto_din_ajuste, monto_carga_usd, monto_carga_clp, monto_carga_clp_ajuste, total_gastos, total_provision, total_a_pagar, monto_pagado, ano, mes, base, aforo, cda, isp, pallets, tvp, otro_transporte, otros, detalle_otro, monto_aju_din, detalle_aju_din, monto_aju_serv, detalle_aju_serv, tc_servicio, precio_base, precio_unitario_x_m3, ejecutivo, mes_eta, din, fk_cliente, din_ingresada_fecha, nombre_cliente, din_pagada_flag, din_pagada_fecha, fk_servicio, doc_factura, doc_din, doc_f_agencia, doc_tgr, almacenaje) 
+        `+QuerySelectMasterBd+`
+        `);
 
         console.log('\n\n FIN CALCULO MASTER BD '+moment().format("DD-MM-YYYY HH:mm"));
     
@@ -3505,7 +3502,10 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
         Reporte.rows.forEach((row, rowIndex) => {
             columns.forEach((column, colIndex) => {
                 const value = row[column];
-                    console.log('\n PROCESANDO COLUMNA '+colIndex);
+                console.log('\n PROCESANDO COLUMNA '+colIndex);
+        
+                // Verifica si value es nulo o undefined
+                if (value !== null && value !== undefined) {
                     if (
                         colIndex === 7  || colIndex === 8   || colIndex === 9   ||
                         colIndex === 10 || colIndex === 11  || colIndex === 12  ||
@@ -3535,8 +3535,14 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
                     {
                         worksheet.cell(rowIndex + 2, colIndex + 1).string(value.toString());
                     }
+                } else {
+                    // Maneja el caso cuando value es null o undefined
+                    console.log(`\n Valor nulo o indefinido en la columna ${colIndex}, fila ${rowIndex}`);
+                    worksheet.cell(rowIndex + 2, colIndex + 1).string(''); // O maneja esto como necesites
+                }
             });
         });
+        
         workbook.write('./public/files/Reporte_Master_BD.xlsx', (err, stats) => {
             if (err) 
             {
@@ -3882,7 +3888,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
     console.log("\n.::. CrearEnviar_ReporteNotasDeCobro");
     var shc_CrearEnviar_ReporteNotasDeCobro = require('node-schedule');
-    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('0 8 * * *', () => {
+    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('30 7 * * *', () => {
         FUNCT_CrearEnviar_ReporteNotasDeCobro();
     });
 
@@ -4105,7 +4111,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
     console.log("\n.::.");
     console.log("\n.::.");
     var shc_CrearEnviar_ReporteClientes = require('node-schedule');
-    shc_CrearEnviar_ReporteClientes.scheduleJob('30 8 * * *', () => {
+    shc_CrearEnviar_ReporteClientes.scheduleJob('50 7 * * *', () => {
         FUNCT_CrearEnviar_ReporteClientes();
     });
 
