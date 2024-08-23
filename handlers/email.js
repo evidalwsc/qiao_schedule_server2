@@ -174,7 +174,6 @@ exports.mail_nuevo_usuario = async(opciones) => {
         from: 'wscargo@wscargo.cl',
         /*to: opciones.email,*/
         to: 'eduardo.vidal@wscargo.cl',
-        //cc: 'eduardo.vidal@wscargo.cl',
         subject: opciones.asunto,
         bcc:casillabcc,
         text,
@@ -208,7 +207,6 @@ exports.mail_notificacion_tarifa = async(opciones) => {
         from: 'wscargo@wscargo.cl',
         /*to: opciones.email,*/
         to: 'eduardo.vidal@wscargo.cl',
-        //cc: 'eduardo.vidal@wscargo.cl',
         subject: opciones.asunto,
         bcc:casillabcc,
         text,
@@ -835,12 +833,9 @@ exports.mail_etiquetas_2022_clientes = async(opciones) => {
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
         to: opciones.to,
-        //to: 'Eduardo.Vidal@wscargo.cl',
         cc: opciones.cc,
         bcc:casillabcc,
-        //cc: 'ariel.aguilar@wscargo.cl',
         replyTo: opciones.emailEjecutivo,
-        //replyTo: 'ariel.aguilar@wscargo.cl',
         subject: opciones.subject,
         text,
         html,
