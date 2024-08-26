@@ -1291,14 +1291,15 @@ const get_data_time_linea =async(fk_servicio)=>{
         let sql3=`SELECT cp.id,
         cp.fk_contenedor,
         c.codigo as fk_contenedor_nombre,
-        (SELECT n2.nave_nombre FROM naves2 n2 LEFT JOIN naves_eta ne on ne.fk_nave=n2.nave_id LEFT JOIN contenedor_viajes_detalle cvd on cvd.fk_nave_eta=ne.id LEFT JOIN contenedor_tracking ct on ct.id=cvd.fk_contenedor_tracking  where ct.id=cp.fk_contenedor_tracking and ne.estado<2 order by ne.id asc limit 1) as nave_nombre
+        (SELECT n2.nave_nombre FROM naves2 n2 LEFT JOIN naves_eta ne on ne.fk_nave=n2.nave_id LEFT JOIN contenedor_viajes_detalle cvd on cvd.fk_nave_eta=ne.id LEFT JOIN contenedor_tracking ct on ct.id=cvd.fk_contenedor_tracking  where ct.id=cp.fk_contenedor_tracking and ne.estado<2 order by ne.id asc limit 1) as nave_nombre,
+        (SELECT n2.nave_id FROM naves2 n2 LEFT JOIN naves_eta ne on ne.fk_nave=n2.nave_id LEFT JOIN contenedor_viajes_detalle cvd on cvd.fk_nave_eta=ne.id LEFT JOIN contenedor_tracking ct on ct.id=cvd.fk_contenedor_tracking  where ct.id=cp.fk_contenedor_tracking and ne.estado<2 order by ne.id asc limit 1) as nave_id
         FROM public.contenedor_proforma cp
         left join contenedor c on c.id=cp.fk_contenedor
         where cp.id=`+result1.rows[0].fk_proforma+`
         ORDER BY cp.id DESC`;
         let result3=await client.query(sql3);
         if(result3 && result3.rows && result3.rowCount>0){
-            let sqlTnm=`select
+            /*let sqlTnm=`select
                         cli_fact.cli_nombre as cli_fact_nombre
                         , cli_desp.cli_nombre as cli_desp_nombre
                         
@@ -1336,11 +1337,20 @@ const get_data_time_linea =async(fk_servicio)=>{
                         ser.estado!=999
                         and replace(ser.numero_contenedor, '-', '') = '`+result3.rows[0].fk_contenedor_nombre+`' and nave.nave_nombre='`+result3.rows[0].nave_nombre+`'`;
 
-                        //let rTnm=await clientTnm.query(sqlTnm);
+                        let rTnm=await clientTnm.query(sqlTnm);
                         let rTnm=false;
                 
                         if(rTnm && rTnm.rows && rTnm.rowCount>0){
                             result.rows.push({texto:'Contenedor retirado de puerto',fecha:moment(rTnm.rows[0].etapa_1_fecha,'DD-MM-YYYY').format('YYYY-MM-DDT00:00:00'),fk_servicio:fk_servicio}); 
+                        }*/
+
+                        let sqlTnm=`SELECT *FROM public.tnm_fechas where contenedor='`+result3.rows[0].fk_contenedor_nombre+`' and nave='`+result3.rows[0].nave_id+`' and estado=true order by id desc`;
+                        let rTnm=await client.query(sqlTnm);
+                
+                        if(rTnm && rTnm.rows && rTnm.rowCount>0){
+                            if(rTnm.rows[0].fecha_retiro && rTnm.rows[0].fecha_retiro!=null){
+                                result.rows.push({texto:'Contenedor retirado de puerto',fecha:moment(rTnm.rows[0].fecha_retiro,'DD-MM-YYYY').format('YYYY-MM-DDT00:00:00'),fk_servicio:fk_servicio});
+                            }
                         }
                     }
     }
