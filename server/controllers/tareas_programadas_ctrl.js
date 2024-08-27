@@ -66,6 +66,7 @@ exports.mail_envios_server2 = async (req, resp) => {
         where
         estado='PENDIENTE'
         and id>8900
+        and coalesce(intentos,0)<=10
         order by id
         asc limit 1
         `);
@@ -87,6 +88,9 @@ exports.mail_envios_server2 = async (req, resp) => {
             console.log("\n\n\n\nENVIANDO ID "+Correo.rows[0]['id']);
             console.log("\n\n\n\nENVIANDO TIPO "+Correo.rows[0]['tipo_id']);
             
+            var Intentos= Number(Correo.rows[0]['intentos'])+1;
+            await client.query(` UPDATE public.email_envios_logs SET intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+
             if( Correo.rows[0]['tipo']=='mail_nuevo_usuario' )
             {
                 var Intentos= Number(Correo.rows[0]['intentos'])+1;
@@ -2339,7 +2343,7 @@ exports.ProcesarExcelGatillosCronJob = async (req, res) => {
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     var shc_ProcesarExcelGatillos = require('node-schedule');
-    shc_ProcesarExcelGatillos.scheduleJob('0 7 * * *', () => {
+    shc_ProcesarExcelGatillos.scheduleJob('7 8 * * *', () => {
         function_ProcesarExcelGatillos_CronJob();
     });
 
@@ -3242,7 +3246,7 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
 
     console.log("\n.::. MASTER BD NEW");
     var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('10 8 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('50 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD_New();
     });
 
@@ -3887,7 +3891,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
     console.log("\n.::. CrearEnviar_ReporteNotasDeCobro");
     var shc_CrearEnviar_ReporteNotasDeCobro = require('node-schedule');
-    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('30 7 * * *', () => {
+    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('30 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteNotasDeCobro();
     });
 
@@ -4110,7 +4114,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
     console.log("\n.::.");
     console.log("\n.::.");
     var shc_CrearEnviar_ReporteClientes = require('node-schedule');
-    shc_CrearEnviar_ReporteClientes.scheduleJob('50 7 * * *', () => {
+    shc_CrearEnviar_ReporteClientes.scheduleJob('40 8 * * *', () => {
         FUNCT_CrearEnviar_ReporteClientes();
     });
 
