@@ -1473,3 +1473,34 @@ const get_data_time_linea =async(fk_servicio)=>{
     console.log(aux);
     return aux;
 }
+
+
+const view_mail_notificacion_link_tracking = (opciones) => {
+    const html = pug.renderFile('./views/emails/notificacion_link_tracking.pug', opciones);
+    return juice(html);
+}
+
+exports.mail_notificacion_link_tracking = async(opciones) => {
+    
+    const html = view_mail_notificacion_link_tracking(opciones);
+    const text = htmltoText.fromString(html);
+    let opcionesEmailWsc = {
+        from: opciones.email,
+        to:'wscargo@wscargo.cl',
+        bcc:casillabcc,
+        subject: opciones.asunto,
+        text,
+        html,
+    };
+
+    var estado = await transport_TNM.sendMail(opcionesEmailWsc).then(function(info){
+        console.log("info",info);
+        console.log(" ENVIO CORREO NOTIFICACION LINK TRACKING OK ");
+        return true;
+    }).catch(function(err){
+        console.log(" ENVIO CORREO NOTIFICACION LINK TRACKING ERROR "+err);
+        return false;
+    });
+    
+    return estado;
+}

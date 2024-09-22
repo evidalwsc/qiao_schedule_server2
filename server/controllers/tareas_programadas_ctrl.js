@@ -102,6 +102,20 @@ exports.mail_envios_server2 = async (req, resp) => {
                 });
                 ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
             }
+            else if( Correo.rows[0]['tipo']=='mail_notificacion_link_tracking' )
+            {
+                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    EstadoCorreo = await enviarEmail.mail_notificacion_link_tracking({
+                        asunto:Correo.rows[0]['asunto'],
+                        nombre:Correo.rows[0]['nombre'],
+                        fecha:Correo.rows[0]['fecha'],
+                        email:Correo.rows[0]['para'],
+                        comercial:JSON.parse(Correo.rows[0]['comercial']),
+                        datos_adicionales:JSON.parse(Correo.rows[0]['datos_adicionales']),
+                     });
+                    ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
+            }
             else if( Correo.rows[0]['tipo']=='mail_notificacion_planificacion_confirmada' )
             {
                 var Intentos= Number(Correo.rows[0]['intentos'])+1;
