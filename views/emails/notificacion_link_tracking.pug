@@ -1,0 +1,79 @@
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        style
+            include ./notificaciones/notif_1.css
+    body
+        table
+            tr
+                td
+                    img(src="https://ci3.googleusercontent.com/proxy/STI_IiVDmp-0-S827D5mTZOvY1KLQV-GdkQyL-7gFVRqnm3e9igIv4BJWZy1UWF-Ncm6bF_R1UvRnzd-wknvGYyBa6gEpXTxi9YywhaAdGJe5yyTEqjnZdrvpT-ETCH5iz3VCq7oEC-73-4KQVM5lshQ0LwB=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v13_1657920194992_rojo_mail_(1).png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:left")
+
+        div(class='title-principal')
+            img(src="https://static.wixstatic.com/media/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.png/v1/fill/w_250,h_86,al_c,q_85,usm_0.66_1.00_0.01/f09af8_12d41aaedbdc4213b27badbacada73e7~mv2.webp",style='width:600px;height:autopx;max-width:200px!important;border:0px;text-align:left')
+
+        div(class='container')
+
+            p Hola #{nombre}, te cuento que tu proveedor compartió un link de seguimiento de envío con los siguientes datos: 
+            br
+            hr
+            br
+            <ul>
+                <li><b>Nombre de tu proveedor:</b> #{datos_adicionales.executive_name}</li>
+                <li><b>Nombre de la empresa:</b> #{datos_adicionales.provider_name}</li>
+                <li><b>Referencia Packing List:</b></li>
+                <li><b>Packing List ID:</b> #{datos_adicionales.id}</li>
+                <li><b>Link de seguimiento de envío:</b> 
+                    a(href=datos_adicionales.link) Link 
+                </li>
+            </ul>
+            br
+            hr
+            br
+            p Si existe un error o tienes inconvenientes por favor ponte en contacto conmigo.
+
+        div(class='container')
+            p(class='texto-comercial') Saludos
+
+            if comercial!=null
+                    <p><strong> #{comercial.nombre} </strong></p>
+                    <p><strong> #{comercial.telefono} </strong></p>
+            if comercial!=null && comercial.telefono!=null
+                p
+                    strong
+                        a(href='https://wa.me/'+comercial.telefono+'?text=Hola%20WSCARGO!%20') Whatsapp
+
+            div(class='border')
+
+        div(class='title-principal2')
+            img(src="https://ci3.googleusercontent.com/proxy/BotPj-Mpl01lWjh3btCmu9xB4LwJO5nNufYafj5A9FXjQqCwuM7Psq6_OBBxrYXFV-NeBUtJzNmBOZ3aVjnTiamKb1rb9F-8-GUyTRbNvmjcLtE_ujfkIK1KRNdfYsPW81jKk9TJph0PeTuNxQot9BuOwhJL-wQEJ8InA71q1Qptr05nE6o=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730173_que_tu_importacion_importe_(1).png",style="width:570px;height:autopx;max-width:570px!important;border:0px;text-align:center")
+
+        table
+            tr
+                td
+                    img(src="https://ci4.googleusercontent.com/proxy/I_3sFR4R5z820Jcx79OO-GkLp20RyJQScphKDkURGXGwroCULIgXOQ248ah7_xLJaraBVt-joOPKBQffZhb7LuVN-NzGA4ZEZgPg1FGkzOkEDYw6B2KNR-q0_m9DcS5KtNFK7f0kbKEaLksk9XrnxI2llXx4=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_zc_v68_1653665730490_amarillo_mail.png",style="width:1450px;height:autopx;max-width:1450px!important;border:0px;text-align:center")
+
+        p(style="line-height:1.7;font-family:Arial,verdana;font-size:12px;color:#000000;padding:0px;margin:0;text-align:center")
+            <span style="font-size:14.6667px">Síguenos</span>
+
+        div(class='title-principal2')
+
+            p(style="align:center")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2ab&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/recVySlAgiiEJHCUouYHRUDF-ZS-xAjuy0-KeWJ7FkQaVbTPIxUoXLlOq63XFeunIqkEoQ1qNpwhJYvToE3ilvJthtUhdIXLR4re_iO1Exwc9bUJWQPAKmhSK3JAwrToYSf0glQqQrrzXeZVfO8=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_1_1654207301708_zcsclwgtfb4.png",style="border:0px 0px 10px 0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2af&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/RcQdGv7zfDA0RfZh7cjKiXe_o7gM9nVt7gaM5wEAcEFPRiq6997PfFgIe8za50nOQ2RqqcYC5qSgJBtY4KVKUAsYYZ7Gt9jl5L3iAcjKrwp0vVjMHiQBD9i3mnN6zsbdMlyryBpiNaAJrdrbByA=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_2_1654207301754_zcsclwgtyt4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='https://pdqwsyju-cmpzourl.maillist-manage.com/click.zc?m=1&mrd=1cbeec20e1e0de39&od=3z7a29aa6293a36f8e95a3172ff47ec4d2a8fc78202e446bfa3587238c0d99b0cb&linkDgs=1cbeec20e1e0d2b3&repDgs=1cbeec20e1e0f72d')
+
+                    img(src="https://ci5.googleusercontent.com/proxy/9NcRcWHwWGNtRWLafPTA9Zm0UqIgrYB1xoM7XqnGtyHuA3CyfYT3AniiyAJzwLgPG1Q9PoqeFe_KW8aMh-dU37C6OaWYoSTErYYYqOJv0u8129hCawC3Jhvy8AxaJCk0tnMRlznexoYbbZCzvM2HIAU=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_3_1654207301799_zcsclwgtinsta4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
+
+                a(href='mailto:contacto@wscargo.cl')
+
+                    img(src="https://ci3.googleusercontent.com/proxy/9q770eOE-bkBcRkbxQVWUV-_k0l9yllfJHbMg8UkuSPcOfkv_yJDUUuwab9A6sD4kyh9lN_YQu_1i3DsnfV2wwvWRLLxTsqZEqR35i8RYX1Z8lJA9QO96I63WMOccT4J3kG24FbDYCQuasT5QZVP-Q=s0-d-e1-ft#https://campaign-image.com/zohocampaigns/918431000002863004_4_1654207301854_zcsclwgtmail4.png",style="border:0px;margin:10px;outline:none;text-decoration:none;width:50px;height:50px")
