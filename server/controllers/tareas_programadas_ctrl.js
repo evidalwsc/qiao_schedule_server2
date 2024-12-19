@@ -63,7 +63,6 @@ exports.mail_envios_server2 = async (req, resp) => {
                 or tipo='mail_notificacion_recepcion' 
                 or tipo='mail_notificacion_retiro_programado' 
                 or tipo='mail_notificacion_consolidacion_rapida' 
-                or tipo='mail_notificacion_confirmacion_consolidacion_rapida' 
             )
             order by id
             asc limit 1
@@ -457,26 +456,6 @@ exports.mail_envios_server2 = async (req, resp) => {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_consolidacion_rapida");
                 await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_consolidacion_rapida({
-                    asunto:Correo.rows[0]['asunto'],
-                    cliente:Correo.rows[0]['nombre'],
-                    datos:JSON.parse(Correo.rows[0]['datos']),
-                    datosAdicionales:JSON.parse(Correo.rows[0]['datos_adicionales']),
-                    fecha:Correo.rows[0]['fecha'],
-                    email:Correo.rows[0]['para'],
-                    url:Correo.rows[0]['enlace'],
-                    emailcomercial:Correo.rows[0]['email_comercial'],
-                    comercial:JSON.parse(Correo.rows[0]['comercial']),
-                    tracking_id:null
-                });
-                ActualizarEstadoEnvioCorreo(Correo.rows[0]['id'], EstadoCorreo);
-            }
-            else if( Correo.rows[0]['tipo']=='mail_notificacion_confirmacion_consolidacion_rapida' )
-            {
-                console.log("\n\n\n\nINGRESO A mail_notificacion_confirmacion_consolidacion_rapida");
-                console.log('\n\n\n PROCESANDO mail_notificacion_confirmacion_consolidacion_rapida')
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
-                EstadoCorreo = await enviarEmail.mail_notificacion_confirmacion_consolidacion_rapida({
                     asunto:Correo.rows[0]['asunto'],
                     cliente:Correo.rows[0]['nombre'],
                     datos:JSON.parse(Correo.rows[0]['datos']),
@@ -1531,8 +1510,17 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
         console.log('\n.::.');
         console.log('\nInsertando el reporte ');
         await client.query(`
-        INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos) 
-        select
+        
+        DO $$
+DECLARE
+    id_val INT;
+BEGIN
+    -- Recorremos los valores de tck.id del 1 al 100
+    FOR id_val IN 1..100000 LOOP
+	
+	INSERT INTO public.sla_00_completo(id_proveedor, nombre_proveedor, fecha_creacion_proveedor, id_cliente, razon_social_cliente, ejecutivo, bultos_esperados, m3_esperados, peso_esperado, bultos_recepcionados, bodega_recepcion, fecha_ultima_carga_documentos, fecha_ultima_recepcion, fecha_de_creacion_del_consolidado, fecha_cierre_consolidado_comercial, id_consolidado_comercial, tracking_id, proforma_id, fecha_consolidado_contenedor, fecha_ingreso_datos_contenedor_nave_eta, n_contenedor, despacho_id, nombre_nave, etd_nave_asignada, fecha_nueva_etd_o_eta, eta, n_carpeta, fecha_publicacion, aforo, fecha_aforo, fecha_retiro, hora_retiro, fecha_desconsolidacion_pudahuel, hora_desconsolidacion, estado_finanzas, fecha_de_pago, fecha_ingreso_direccion, fecha_programada, fecha_entrega_retiro, estado_despacho, dias_libres, fecha_creacion_cliente, m3_recibidos) 
+	
+	select
 
         coalesce(prov.id::text, ''::text) AS id_proveedor
 
@@ -1724,7 +1712,8 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
         where
         tck.estado_sla_00 is not true 
         and tck.estado>=0 
-
+		and tck.id=id_val
+		
         group by 
         prov.id
         , tck.fecha_creacion
@@ -1754,7 +1743,10 @@ exports.GenerateReporteGatiloByAPI = async (req,res) =>{ try{
         , exc.ultimo_pago
         , exc.eta_despacho
         , exc.estado_despacho
-        , exc.dias_libres
+        , exc.dias_libres;
+		
+	END LOOP;		
+END $$;
         `);
 
         await client.query(`
@@ -2334,7 +2326,7 @@ exports.ProcesarExcelGatillosCronJob1 = async (req, res) => {
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     var shc_ProcesarExcelGatillos1 = require('node-schedule');
-    shc_ProcesarExcelGatillos1.scheduleJob('0 6 * * *', () => {
+    shc_ProcesarExcelGatillos1.scheduleJob('5 8 * * *', () => {
         function_ProcesarExcelGatillos_CronJob1();
     });
 
@@ -2657,7 +2649,7 @@ exports.ProcesarExcelGatillosCronJob2 = async (req, res) => {
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     console.log("\n.::. ProcesarExcelGatillosCronJob");
     var shc_ProcesarExcelGatillos2 = require('node-schedule');
-    shc_ProcesarExcelGatillos2.scheduleJob('0 7 * * *', () => {
+    shc_ProcesarExcelGatillos2.scheduleJob('30 8 * * *', () => {
         function_ProcesarExcelGatillos_CronJob2();
     });
 
@@ -3250,7 +3242,7 @@ exports.CrearEnviar_ReporteMasterBD_New = async (req, res) => {
 
     console.log("\n.::. MASTER BD NEW");
     var shc_CrearEnviar_ReporteMasterBD_New = require('node-schedule');
-    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('10 9 * * *', () => {
+    shc_CrearEnviar_ReporteMasterBD_New.scheduleJob('0 10 * * *', () => {
         FUNCT_CrearEnviar_ReporteMasterBD_New();
     });
 
@@ -3891,7 +3883,7 @@ exports.CrearEnviar_ReporteNotasDeCobro = async (req, res) => {
 
     console.log("\n.::. CrearEnviar_ReporteNotasDeCobro");
     var shc_CrearEnviar_ReporteNotasDeCobro = require('node-schedule');
-    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('30 7 * * *', () => {
+    shc_CrearEnviar_ReporteNotasDeCobro.scheduleJob('0 9 * * *', () => {
         FUNCT_CrearEnviar_ReporteNotasDeCobro();
     });
 
@@ -4114,7 +4106,7 @@ exports.CrearEnviar_ReporteClientes = async (req, res) => {
     console.log("\n.::.");
     console.log("\n.::.");
     var shc_CrearEnviar_ReporteClientes = require('node-schedule');
-    shc_CrearEnviar_ReporteClientes.scheduleJob('0 8 * * *', () => {
+    shc_CrearEnviar_ReporteClientes.scheduleJob('30 9 * * *', () => {
         FUNCT_CrearEnviar_ReporteClientes();
     });
 
