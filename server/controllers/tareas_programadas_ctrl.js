@@ -50,7 +50,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             where
             estado='PENDIENTE'
             and id>=90034
-            and coalesce(intentos,0)<=50
+            and coalesce(intentos,0)<=5
             and (
                 tipo='mail_nuevo_usuario' 
                 or tipo='mail_notificacion_planificacion_confirmada' 
@@ -80,12 +80,9 @@ exports.mail_envios_server2 = async (req, resp) => {
         
         if(Correo.rows.length>0)
         {
-            console.log("\ntipo "+Correo.rows[0]['tipo']);
-            console.log("\ntipo_id "+Correo.rows[0]['tipo_id']);
             console.log("\n.::.");
             console.log("\n.::.");
-            console.log("\n\n\n\nENVIANDO ID "+Correo.rows[0]['id']+' INTENTOS '+Correo.rows[0]['intentos']);
-            console.log("\n\n\n\nENVIANDO TIPO "+Correo.rows[0]['tipo_id']);
+            console.log("\n\n\n\nENVIANDO ID "+Correo.rows[0]['id']+' INTENTOS '+Correo.rows[0]['intentos']+' TIPO '+Correo.rows[0]['tipo']+' TIPO_ID '+Correo.rows[0]['tipo_id']);
             
             var Intentos= Number(Correo.rows[0]['intentos'])+1;
             await client.query(` UPDATE public.email_envios_logs SET intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
@@ -93,8 +90,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             if( Correo.rows[0]['tipo']=='mail_nuevo_usuario' )
             {
                 console.log("\n\n\n\nINGRESO A mail_nuevo_usuario");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 await enviarEmail.mail_nuevo_usuario({
                     nombre:Correo.rows[0]['nombre']
                     , apellido:Correo.rows[0]['datos']
@@ -108,8 +104,8 @@ exports.mail_envios_server2 = async (req, resp) => {
             }
             else if( Correo.rows[0]['tipo']=='mail_notificacion_link_tracking' )
             {
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_link_tracking");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_link_tracking({
                         asunto:Correo.rows[0]['asunto'],
                         nombre:Correo.rows[0]['nombre'],
@@ -123,8 +119,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_planificacion_confirmada' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_planificacion_confirmada");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_planificacion_confirmada({
                     asunto:Correo.rows[0]['asunto'],
                     fecha_descarga:Correo.rows[0]['fecha'],
@@ -137,8 +132,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_contenedor_proforma' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_contenedor_proforma");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_contenedor_proforma({
                     asunto:Correo.rows[0]['asunto'],
                     texto:Correo.rows[0]['texto'],
@@ -152,8 +146,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_tarifa' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_tarifa");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_tarifa({
                     asunto:Correo.rows[0]['asunto'],
                     fecha:Correo.rows[0]['fecha'],
@@ -165,8 +158,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_question' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_question");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_question({
                     asunto:Correo.rows[0]['asunto'],
                     name:Correo.rows[0]['nombre'],
@@ -180,8 +172,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_6' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_6");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_6({
                     asunto:Correo.rows[0]['asunto'],
                     nombreUsuario:Correo.rows[0]['nombre'],
@@ -199,9 +190,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_1");
                 if( Correo.rows[0]['tipo_id']=='16' )
                 {
-                    console.log("\n\n\n\nINGRESO A 16");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 16");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -218,9 +208,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='17' )
                 {
-                    console.log("\n\n\n\nINGRESO A 17");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 17");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -236,9 +225,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='18' )
                 {
-                    console.log("\n\n\n\nINGRESO A 18");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 18");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -255,9 +243,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='14' )
                 {
-                    console.log("\n\n\n\nINGRESO A 14");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 14");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -275,9 +262,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='22' )
                 {
-                    console.log("\n\n\n\nINGRESO A 22");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 22");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -293,9 +279,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='23' )
                 {
-                    console.log("\n\n\n\nINGRESO A 23");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 23");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -311,9 +296,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='19' || Correo.rows[0]['tipo_id']=='20')
                 {
-                    console.log("\n\n\n\nINGRESO A 19 || 20");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 19 o 20");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -330,9 +314,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='99' )
                 {
-                    console.log("\n\n\n\nINGRESO A 99");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 99");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -349,9 +332,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                 }
                 else if( Correo.rows[0]['tipo_id']=='100' )
                 {
-                    console.log("\n\n\n\nINGRESO A 100");
-                    var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                    console.log("\n\n\n\nINGRESO A mail_notificacion_1 tipo 1000");
+                    await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                     EstadoCorreo = await enviarEmail.mail_notificacion_1({
                         asunto:Correo.rows[0]['asunto'],
                         nombreUsuario:Correo.rows[0]['nombre'],
@@ -376,9 +358,8 @@ exports.mail_envios_server2 = async (req, resp) => {
                     {
                         if( Correo.rows[0]['adjunto']=='' || Correo.rows[0]['adjunto']==null )
                         {
-                            console.log("\n\n\n\nINGRESO A PASO 2 ADJUNTO NULL");
-                            var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                            console.log("\n\n\n\nINGRESO A PASO 2 tipo 999 or 1000 or 999 or 1000");
+                            await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                             EstadoCorreo = await enviarEmail.mail_notificacion_1({
                                 asunto:Correo.rows[0]['asunto'],
                                 nombreUsuario:Correo.rows[0]['nombre'],
@@ -399,8 +380,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_pago' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_pago");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
 
                 EstadoCorreo = await enviarEmail.mail_notificacion_pago({
                     asunto:Correo.rows[0]['asunto'],
@@ -417,8 +397,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_recepcion' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_recepcion");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_recepcion({
                     asunto:Correo.rows[0]['asunto'],
                     cliente:Correo.rows[0]['nombre'],
@@ -436,8 +415,7 @@ exports.mail_envios_server2 = async (req, resp) => {
             else if( Correo.rows[0]['tipo']=='mail_notificacion_retiro_programado' )
             {
                 console.log("\n\n\n\nINGRESO A mail_notificacion_retiro_programado");
-                var Intentos= Number(Correo.rows[0]['intentos'])+1;
-                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO', intentos=`+Intentos+` where id=`+Correo.rows[0]['id']+` `);
+                await client.query(` UPDATE public.email_envios_logs SET estado='ENVIANDO' where id=`+Correo.rows[0]['id']+` `);
                 EstadoCorreo = await enviarEmail.mail_notificacion_retiro_programado({
                     asunto:Correo.rows[0]['asunto'],
                     //cliente:Correo.rows[0]['nombre'],
