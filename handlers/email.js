@@ -30,7 +30,8 @@ exports.mail_reporte_clientes = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+
         subject: opciones.asunto,
         text,
         html,
@@ -65,7 +66,8 @@ exports.mail_reporte_gatillos = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+
         subject: opciones.asunto,
         text,
         html,
@@ -100,7 +102,8 @@ exports.mail_reporte_notasdecobro = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+
         subject: opciones.asunto,
         text,
         html,
@@ -135,7 +138,8 @@ exports.mail_reporte_masterbd = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+
         subject: opciones.asunto,
         text,
         html,
@@ -172,10 +176,10 @@ exports.mail_nuevo_usuario = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        /*to: opciones.email,*/
-        to: 'eduardo.vidal@wscargo.cl',
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'eduardo.vidal@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
-        bcc:casillabcc,
         text,
         html
     };
@@ -205,10 +209,10 @@ exports.mail_notificacion_tarifa = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        /*to: opciones.email,*/
-        to: 'eduardo.vidal@wscargo.cl',
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'eduardo.vidal@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
-        bcc:casillabcc,
         text,
         html
     };
@@ -238,10 +242,10 @@ exports.mail_notificacion_planificacion_confirmada = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
-        //cc: 'pbarria.reyes@gmail.com',
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
-        bcc:casillabcc,
         text,
         html,
         /*attachments: [
@@ -274,12 +278,12 @@ exports.mail_notificacion_etiqueta_cliente = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
-        //cc: 'pbarria.reyes@gmail.com',
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
         text,
         html,
-        bcc:casillabcc,
         attachments: [
         {
             filename: 'etiqueta-wsc-'+opciones.fk_cliente+'.pdf', // <= Here: made sure file name match
@@ -314,9 +318,10 @@ exports.mail_notificacion_proceso_documental = async(opciones) => {
     
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.to,
-        cc: opciones.cc,
-        bcc:casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.to,
+        cc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.cc,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
         text,
         html,
@@ -367,10 +372,11 @@ exports.mail_notificacion_recepcion = async(opciones) => {
     }*/
     let opcionesEmailWsc = {
         from: email1,
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';'+casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailcomercial,
+
         cliente: opciones.cliente,
-        replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -411,10 +417,11 @@ exports.mail_notificacion_pago = async(opciones) => {
 
     let opcionesEmailWsc = {
         from: email1,
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';pagos@wscargo.cl',
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';pagos@wscargo.cl',
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailcomercial,
+        
         cliente: opciones.cliente,
-        replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -449,10 +456,11 @@ exports.mail_notificacion_consolidacion_rapida = async(opciones) => {
     }*/
     let opcionesEmailWsc = {
         from: email1,
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';'+casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailcomercial,
+
         cliente: opciones.cliente,
-        replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -494,10 +502,11 @@ exports.mail_notificacion_confirmacion_consolidacion_rapida = async(opciones) =>
     }*/
     let opcionesEmailWsc = {
         from: email1,
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';'+casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailcomercial,
+
         cliente: opciones.cliente,
-        replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -620,9 +629,10 @@ exports.mail_notificacion_contenedor_proforma = async(opciones) => {
 
                         let opcionesEmail = {
                             from: 'wscargo@wscargo.cl',
-                            to: 'wscargo@wscargo.cl',
-                            replyTo:filterEmails[j].emailComercial,
-                            bcc:filterEmails[j].emailCliente+';'+filterEmails[j].emailComercial+';'+casillabcc,
+                            to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+                            replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:filterEmails[j].emailComercial,
+                            bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:filterEmails[j].emailCliente+';'+filterEmails[j].emailComercial+';'+casillabcc,
+
                             fecha:opciones.fecha,
                             subject: asunto/*+' (cliente '+filterEmails[j].fk_cliente+')'*/,
                             text,
@@ -682,9 +692,9 @@ exports.mail_notificacion_question = async (opciones) => {
 
     let opcionesEmail = {
       from: remitente,
-      to: opciones.to,
-      //cc: opciones.cc,
-      bcc:casillabcc,
+      to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.to,
+      bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
       subject: opciones.asunto,
       text,
       html,
@@ -715,11 +725,12 @@ exports.mail_nota_de_cobro = async(opciones) => {
 
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.destinatario,
-        cc: opciones.copia_destinatario,
-        bcc:casillabcc,
-        replyTo: opciones.copia_destinatario,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.destinatario,
+        cc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia_destinatario,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia_destinatario,
         subject: opciones.asunto,
+
         text,
         html,
         attachments: [
@@ -754,11 +765,12 @@ exports.mail_nota_de_cobro_din = async(opciones) => {
 
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.destinatario,
-        cc: opciones.copia_destinatario,
-        bcc:casillabcc,
-        replyTo: opciones.copia_destinatario,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.destinatario,
+        cc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia_destinatario,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia_destinatario,
         subject: opciones.asunto,
+
         text,
         html,
         attachments: [
@@ -798,10 +810,11 @@ exports.mail_nota_de_cobro_factura = async(opciones) => {
     console.log('\n\n ARCHIVOS QUE TENGO QUE ENVIAR '+JSON.stringify(opciones.archivos));
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.email,
-        cc: opciones.copia,
-        bcc:casillabcc,
-        replyTo: opciones.copia,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+        cc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.copia,
+
         subject: opciones.asunto,
         text,
         html,
@@ -832,10 +845,11 @@ exports.mail_etiquetas_2022_clientes = async(opciones) => {
 
     let opcionesEmail = {
         from: 'wscargo@wscargo.cl',
-        to: opciones.to,
-        cc: opciones.cc,
-        bcc:casillabcc,
-        replyTo: opciones.emailEjecutivo,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.to,
+        cc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.cc,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailEjecutivo,
+
         subject: opciones.subject,
         text,
         html,
@@ -862,9 +876,10 @@ exports.mail_notificacion_exp_digital = async(opciones) => {
     const text = htmltoText.fromString(html);
     let opcionesEmailWsc = {
         from: 'wscargo@wscargo.cl',
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';'+casillabcc,
-        fecha:opciones.fecha,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';'+casillabcc,
+
+        fecha: opciones.fecha,
         subject: opciones.asunto,
         text,
         html,
@@ -904,8 +919,9 @@ console.log('aqui');
     }*/
     let opcionesEmailWsc = {
         from: remitente,
-        to:opciones.email,
-        bcc:'wscargo@wscargo.cl;'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl;'+casillabcc,
+
         fecha:opciones.fecha,
         subject: opciones.asunto
         /*attachments: [
@@ -1043,8 +1059,9 @@ exports.mail_notificacion_6 = async(opciones) => {
     }*/
     let opcionesEmailWsc = {
         from: remitente,
-        to:opciones.email,
-        bcc:'wscargo@wscargo.cl;'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl;'+casillabcc,
+
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -1089,8 +1106,9 @@ exports.mail_notificacion_32 = async(opciones) => {
     const text = htmltoText.fromString(html);
     let opcionesEmailWsc = {
         from: opciones.from,
-        to: opciones.to,
-        bcc:casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.to,
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.subject,
         text,
         html,
@@ -1129,8 +1147,9 @@ exports.mail_notificacion_retiro_programado = async(opciones) => {
     const text = htmltoText.fromString(html);
     let opcionesEmailWsc = {
         from: opciones.email,
-        to:'wscargo@wscargo.cl',
-        bcc:casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+
         subject: opciones.asunto,
         text,
         html,
@@ -1165,10 +1184,11 @@ exports.mail_notificacion_new_consolidado = async(opciones) => {
     }*/
     let opcionesEmailWsc = {
         from: email1,
-        to:'wscargo@wscargo.cl',
-        bcc: opciones.email+';'+casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.email+';'+casillabcc,
+        replyTo: process.env.CorreoTest!='NULO'?process.env.CorreoTest:opciones.emailcomercial,
+
         cliente: opciones.cliente,
-        replyTo: opciones.emailcomercial,
         fecha:opciones.fecha,
         subject: opciones.asunto,
         text,
@@ -1486,8 +1506,9 @@ exports.mail_notificacion_link_tracking = async(opciones) => {
     const text = htmltoText.fromString(html);
     let opcionesEmailWsc = {
         from: opciones.email,
-        to:'wscargo@wscargo.cl',
-        bcc:casillabcc,
+        to: process.env.CorreoTest!='NULO'?process.env.CorreoTest:'wscargo@wscargo.cl',
+        bcc: process.env.CorreoTest!='NULO'?process.env.CorreoTest:casillabcc,
+        
         subject: opciones.asunto,
         text,
         html,
