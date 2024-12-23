@@ -42,6 +42,8 @@ exports.mail_envios_server2 = async (req, resp) => {
             var QueryGetPendientes = `
             SELECT
             *
+            , case when tipo='mail_notificacion_pago' then coalesce(datos_adicionales,'{}')::jsonb
+            else '{}' end as datos_pagos
             FROM
             public.email_envios_logs
             where
