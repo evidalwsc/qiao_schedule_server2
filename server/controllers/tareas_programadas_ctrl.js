@@ -31,7 +31,7 @@ exports.mail_envios_server2 = async (req, resp) => {
     console.log("\nCONSULTANDO CORREOS 2 ");
     var sche_mail_envios_server2 = require('node-schedule');
 
-    sche_mail_envios_server2.scheduleJob('*/15 * * * * *', () => {
+    sche_mail_envios_server2.scheduleJob('*/30 * * * * *', () => {
         console.log("\nENTRO EN EL CRON JOB ");
         mail_envios_server2();
 
