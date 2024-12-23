@@ -59,18 +59,16 @@ exports.mail_envios_server2 = async (req, resp) => {
                 or tipo='mail_notificacion_recepcion' 
                 or tipo='mail_notificacion_retiro_programado' 
                 or tipo='mail_notificacion_consolidacion_rapida' 
-                or ( 
-                tipo='mail_notificacion_1' 
-                and tipo_id='14'
-                and tipo_id='16'
-                and tipo_id='17'
-                and tipo_id='18'
-                and tipo_id='19'
-                and tipo_id='20'
-                and tipo_id='22'
-                and tipo_id='23'
-                and tipo_id='99'
-                and tipo_id='100'
+                or ( tipo='mail_notificacion_1' and tipo_id='14' )
+                or ( tipo='mail_notificacion_1' and tipo_id='16' )
+                or ( tipo='mail_notificacion_1' and tipo_id='17' )
+                or ( tipo='mail_notificacion_1' and tipo_id='18' )
+                or ( tipo='mail_notificacion_1' and tipo_id='19' )
+                or ( tipo='mail_notificacion_1' and tipo_id='20' )
+                or ( tipo='mail_notificacion_1' and tipo_id='22' )
+                or ( tipo='mail_notificacion_1' and tipo_id='23' )
+                or ( tipo='mail_notificacion_1' and tipo_id='99' )
+                or ( tipo='mail_notificacion_1' and tipo_id='100' )
                 )
             )
             order by id
