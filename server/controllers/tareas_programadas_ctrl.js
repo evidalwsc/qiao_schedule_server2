@@ -69,7 +69,6 @@ exports.mail_envios_server2 = async (req, resp) => {
                 or ( tipo='mail_notificacion_1' and tipo_id='23' )
                 or ( tipo='mail_notificacion_1' and tipo_id='99' )
                 or ( tipo='mail_notificacion_1' and tipo_id='100' )
-                )
             )
             order by id
             asc limit 1
